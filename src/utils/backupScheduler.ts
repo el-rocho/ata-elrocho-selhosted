@@ -47,7 +47,8 @@ export function checkAndExecuteAutoBackup(
   }
 
   if (isDue) {
-    const prefix = `copia_seguridad_${settings.backupFrequency}`;
+    // Unificar formato de nombre: tension_arterial_daily_AAAA-MM-DD_HH-MM-SS.csv
+    const prefix = `tension_arterial_${settings.backupFrequency}`;
     exportToCSV(sessions, { preset: 'all' }, prefix);
 
     onUpdateSettings({

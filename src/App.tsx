@@ -34,7 +34,6 @@ export function App() {
   const [dateRange, setDateRange] = useState<DateRange>({ preset: '30days' });
   const [notificationMsg, setNotificationMsg] = useState<string | null>(null);
 
-  // Cargar datos iniciales desde el servidor
   const loadDataFromServer = async () => {
     try {
       const [loadedReadings, loadedSettings] = await Promise.all([
@@ -50,7 +49,6 @@ export function App() {
 
   useEffect(() => {
     loadDataFromServer();
-    // Re-sincronizar automáticamente cada 10 segundos para actualizar lecturas de otros dispositivos
     const interval = setInterval(loadDataFromServer, 10000);
     return () => clearInterval(interval);
   }, []);
@@ -90,7 +88,8 @@ export function App() {
       return;
     }
     const now = new Date();
-    exportToCSV(sessions, { preset: 'all' }, 'copia_seguridad_manual', {
+    // Unificado: tension_arterial_AAAA-MM-DD_HH-MM-SS.csv
+    exportToCSV(sessions, { preset: 'all' }, 'tension_arterial', {
       patientName: settings.patientName,
       patientSex: settings.patientSex,
       patientAge: settings.patientAge,
