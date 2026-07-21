@@ -1,39 +1,54 @@
-# Servidor Centralizado de Registro de Tensión Arterial (Multi-Dispositivo) 🩺
+# Servidor Centralizado de Registro de Tensión Arterial (Self-Hosted / Multi-Dispositivo) 🩺
 
-Aplicación web PWA auto-alojada con servidor local Node.js + Express centralizado. Permite sincronizar las mediciones de tensión arterial y pulsaciones en tiempo real entre múltiples dispositivos Android (tablets, móviles) conectados a la misma red Wi-Fi de tu casa o servidor NAS/Raspberry Pi.
-
----
-
-## 🚀 Características Principales
-
-- **Multi-Dispositivo Sincronizado**: Cualquier registro o cambio de configuración desde tu tablet Android se refleja automáticamente en tus otros dispositivos.
-- **Ruleta Táctil & Teclado Numérico**: Introducción ultrarrápida centrada automáticamente en la última medición realizada.
-- **Filtro de Síndrome de Bata Blanca**: Atenuación inteligente de ansiedad inicial en intervalos de 5, 10 o 15 minutos.
-- **Informes PDF con Doble Eje Y**: Gráfico vectorial impreso con curva de tensión y línea punteada de pulsaciones en el margen derecho.
-- **Exportación e Importación CSV**: Copias de seguridad automáticas y restauración sin duplicados.
-- **Despliegue con Docker / Docker-Compose**: Ideal para alojar en un servidor local, Synology NAS, Unraid o Raspberry Pi.
+> ⚠️ **Nota:** Esta es una **primera versión en fase de pruebas (Beta / v1.0.0-beta)**. Está diseñada para probar la sincronización en red local desde múltiples dispositivos Android y servidores domésticos.
 
 ---
 
-## 🛠️ Cómo Ejecutar en Local
+## 📋 Descripción
 
-### Opción 1: Con Node.js
+Aplicación web PWA auto-alojada con servidor local **Node.js + Express + Base de Datos Centralizada**. Permite sincronizar las mediciones de tensión arterial y pulsaciones en tiempo real entre múltiples dispositivos Android (tablets, móviles) conectados a la misma red Wi-Fi de tu casa o desde un servidor NAS/Raspberry Pi.
 
-1. Instala las dependencias:
+---
+
+## ✨ Características Destacadas
+
+- **Sincronización Multi-Dispositivo**: Cualquier registro o cambio de configuración en tu tablet Android se actualiza automáticamente en la base de datos centralizada del servidor.
+- **Ruleta Táctil & Teclado Numérico**: Sistema dual con selección rápida centrada en la última medición realizada.
+- **Filtro de Síndrome de Bata Blanca**: Opción para atenuar lecturas elevadas iniciales producidas por la ansiedad del momento (intervalos de 5, 10 o 15 minutos).
+- **Informes PDF con Doble Eje Y**: Gráfico vectorial impreso con curva de tensión y línea de pulsaciones en el margen derecho.
+- **Copias de Seguridad CSV**: Formato de archivo unificado (`tension_arterial_daily_AAAA-MM-DD_HH-MM-SS.csv`) con fecha y hora exacta.
+- **Contenedorización Docker**: Listo para desplegar con un comando mediante Docker y Docker-Compose.
+
+---
+
+## 🚀 Instalación y Despliegue
+
+### Opción 1: Con Docker Compose (Recomendado para NAS / Servidores)
+
+1. Clona el repositorio:
    ```bash
-   npm install
+   git clone https://github.com/el-rocho/ata-elrocho-selhosted.git
+   cd ata-elrocho-selhosted
    ```
-2. Compila el frontend e inicia el servidor central:
-   ```bash
-   npm run start
-   ```
-3. Abre en tu navegador de cualquier dispositivo Android conectado a tu Wi-Fi:
-   `http://<IP_DE_TU_SERVIDOR>:3000`
-
-### Opción 2: Con Docker Compose (Recomendado para NAS / Servidores)
-
-1. En la carpeta raíz del proyecto, ejecuta:
+2. Levanta el contenedor:
    ```bash
    docker-compose up -d --build
    ```
-2. La base de datos centralizada se guardará de forma persistente en la carpeta `./data`.
+3. La aplicación estará disponible en `http://<IP_DE_TU_SERVIDOR>:3000`. La base de datos persistente se guardará en la carpeta `./data`.
+
+---
+
+### Opción 2: Con Node.js
+
+1. Instala las dependencias y compila:
+   ```bash
+   npm install
+   npm run start
+   ```
+2. Accede desde tu navegador o tablet Android en tu red local: `http://<IP_DE_TU_SERVIDOR>:3000`.
+
+---
+
+## 🔒 Privacidad y RGPD
+
+Todos los datos permanecen 100% dentro de tu propia red local. No requiere servicios externos en la nube ni conexión a servidores de terceros.
