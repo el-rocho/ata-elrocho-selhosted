@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  control-tension-server:
+    build: .
+    container_name: control-tension-server
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./data:/app/data
+    environment:
+      - PORT=3000
