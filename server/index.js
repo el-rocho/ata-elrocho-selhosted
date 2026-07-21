@@ -17,14 +17,12 @@ app.use(express.json({ limit: '10mb' }));
 const DATA_DIR = path.join(__dirname, '../data');
 const DB_FILE = path.join(DATA_DIR, 'database.json');
 
-// Garantizar que la carpeta data exista
 if (!fs.existsSync(DATA_DIR)) {
   fs.mkdirSync(DATA_DIR, { recursive: true });
 }
 
-// Datos iniciales de demostración si la base de datos es nueva
 const DEFAULT_SETTINGS = {
-  enableWhiteCoatFilter: true,
+  enableWhiteCoatFilter: false, // Por defecto DESACTIVADO
   whiteCoatIntervalMinutes: 5,
   defaultArm: 'left',
   preferredInputMode: 'keyboard',
@@ -107,7 +105,6 @@ const INITIAL_DEMO_READINGS = [
   },
 ];
 
-// Cargar o inicializar base de datos de forma segura
 function readDB() {
   try {
     if (!fs.existsSync(DB_FILE)) {
@@ -131,11 +128,6 @@ function writeDB(data) {
   }
 }
 
-/* ==========================================================================
-   RUTAS DE LA API REST (Sincronización Multi-Dispositivo)
-   ========================================================================== */
-
-// 1. Obtener todas las mediciones
 app.get('/api/readings', (req, res) => {
   const db = readDB();
   const sorted = [...db.readings].sort(
@@ -144,7 +136,6 @@ app.get('/api/readings', (req, res) => {
   res.json(sorted);
 });
 
-// 2. Agregar nueva lectura
 app.post('/api/readings', (req, res) => {
   const { systolic, diastolic, heartRate, arm, notes } = req.body;
   if (!systolic || !diastolic || !heartRate) {
@@ -167,7 +158,6 @@ app.post('/api/readings', (req, res) => {
   res.status(201).json(newReading);
 });
 
-// 3. Eliminar lectura individual
 app.delete('/api/readings/:id', (req, res) => {
   const { id } = req.params;
   const db = readDB();
@@ -176,7 +166,6 @@ app.delete('/api/readings/:id', (req, res) => {
   res.json({ success: true, count: db.readings.length });
 });
 
-// 4. Eliminar sesión (múltiples lecturas de una sesión)
 app.post('/api/sessions/delete', (req, res) => {
   const { readingIds } = req.body;
   if (!Array.isArray(readingIds)) {
@@ -189,7 +178,6 @@ app.post('/api/sessions/delete', (req, res) => {
   res.json({ success: true, count: db.readings.length });
 });
 
-// 5. Eliminar TODOS los datos
 app.delete('/api/readings/all/confirm', (req, res) => {
   const db = readDB();
   db.readings = [];
@@ -197,7 +185,6 @@ app.delete('/api/readings/all/confirm', (req, res) => {
   res.json({ success: true, count: 0 });
 });
 
-// 6. Restaurar datos demo
 app.post('/api/readings/reset-demo', (req, res) => {
   const db = readDB();
   db.readings = INITIAL_DEMO_READINGS;
@@ -205,7 +192,6 @@ app.post('/api/readings/reset-demo', (req, res) => {
   res.json(db.readings);
 });
 
-// 7. Importar archivo CSV
 app.post('/api/readings/import', (req, res) => {
   const importedItems = req.body;
   if (!Array.isArray(importedItems)) {
@@ -238,13 +224,11 @@ app.post('/api/readings/import', (req, res) => {
   res.json({ addedCount, total: db.readings.length, readings: db.readings });
 });
 
-// 8. Obtener ajustes
 app.get('/api/settings', (req, res) => {
   const db = readDB();
   res.json(db.settings || DEFAULT_SETTINGS);
 });
 
-// 9. Actualizar ajustes
 app.post('/api/settings', (req, res) => {
   const newSettings = req.body;
   const db = readDB();
@@ -253,9 +237,6 @@ app.post('/api/settings', (req, res) => {
   res.json(db.settings);
 });
 
-/* ==========================================================================
-   SERVIR APLICACIÓN WEB ESTÁTICA PWA
-   ========================================================================== */
 const DIST_DIR = path.join(__dirname, '../dist');
 if (fs.existsSync(DIST_DIR)) {
   app.use(express.static(DIST_DIR));
@@ -264,7 +245,6 @@ if (fs.existsSync(DIST_DIR)) {
   });
 }
 
-// Iniciar servidor en el puerto 3000 accesible desde cualquier dispositivo local (0.0.0.0)
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`=======================================================`);
   console.log(`🩺 Servidor Centralizado de Tensión Arterial Iniciado`);

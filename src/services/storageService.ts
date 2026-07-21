@@ -12,7 +12,7 @@ import {
 } from './apiService';
 
 export const DEFAULT_SETTINGS: AppSettings = {
-  enableWhiteCoatFilter: true,
+  enableWhiteCoatFilter: false, // Por defecto DESACTIVADO
   whiteCoatIntervalMinutes: 5,
   defaultArm: 'left',
   preferredInputMode: 'keyboard',
