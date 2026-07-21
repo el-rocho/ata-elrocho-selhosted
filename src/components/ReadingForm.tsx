@@ -106,11 +106,23 @@ export const ReadingForm: React.FC<ReadingFormProps> = ({
     <div className="card form-card">
       <div className="form-header">
         <div className="form-title-group">
-          <Activity className="icon-pulse" size={20} />
-          <h2>Nueva Medición</h2>
+          <div className="form-title-left">
+            <Activity className="icon-pulse" size={20} />
+            <h2>Nueva Medición</h2>
+          </div>
+
+          {/* Badge de clasificación en tiempo real */}
+          <div
+            className="live-category-badge"
+            style={{ backgroundColor: category.badgeBg, color: category.badgeText }}
+            title={category.description}
+          >
+            <span className="dot" style={{ backgroundColor: category.colorHex }}></span>
+            {category.name}
+          </div>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+        <div className="form-controls-wrapper">
           <div className="arm-selector-container">
             <label className="arm-label">
               <Armchair size={14} />
@@ -155,15 +167,6 @@ export const ReadingForm: React.FC<ReadingFormProps> = ({
               <Sliders size={14} />
               <span>Ruleta</span>
             </button>
-          </div>
-
-          <div
-            className="live-category-badge"
-            style={{ backgroundColor: category.badgeBg, color: category.badgeText }}
-            title={category.description}
-          >
-            <span className="dot" style={{ backgroundColor: category.colorHex }}></span>
-            {category.name}
           </div>
         </div>
       </div>
