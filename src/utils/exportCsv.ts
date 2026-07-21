@@ -108,9 +108,18 @@ export function exportToCSV(
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
 
-  const nowStr = new Date().toISOString().slice(0, 10);
+  // Formatear la fecha y hora exacta (AAAA-MM-DD_HH-MM-SS)
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  const hours = String(now.getHours()).padStart(2, '0');
+  const minutes = String(now.getMinutes()).padStart(2, '0');
+  const seconds = String(now.getSeconds()).padStart(2, '0');
+  const dateTimeStr = `${year}-${month}-${day}_${hours}-${minutes}-${seconds}`;
+
   link.setAttribute('href', url);
-  link.setAttribute('download', `${filenamePrefix}_${nowStr}.csv`);
+  link.setAttribute('download', `${filenamePrefix}_${dateTimeStr}.csv`);
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
