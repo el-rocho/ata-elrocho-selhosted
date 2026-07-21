@@ -24,7 +24,7 @@ export const Header: React.FC<HeaderProps> = ({
           <h1 className="brand-title">Control Tensión Arterial</h1>
           <div className="brand-badge">
             <Server size={13} className="shield-icon" />
-            <span>Servidor Centralizado &bull; Sincronizado</span>
+            <span>Servidor Centralizado &bull; v1.0.0</span>
           </div>
         </div>
       </div>
