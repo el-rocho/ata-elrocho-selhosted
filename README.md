@@ -3,7 +3,7 @@
 ![Built with Vibe Coding](https://img.shields.io/badge/Built%20with-Vibe%20Coding%20%26%20AI-7c3aed?style=for-the-badge&logo=sparkles)
 ![Estado](https://img.shields.io/badge/Estado-v1.0.0--beta-orange?style=for-the-badge)
 
-> ⚠️ **Nota de Versión:** Esta es una **primera versión en fase de pruebas (v1.0.0-beta)**. Está diseñada para probar la sincronización en red local desde múltiples dispositivos Android y servidores domésticos.
+> ⚠️ **Nota de Versión:** Esta es una **primera versión en fase de pruebas (v1.0.0-beta)**. Está diseñada para sincronización en red local desde cualquier navegador o dispositivo (Windows, Linux, macOS, Android, iOS) y servidores domésticos.
 >
 > ✨ **Metodología de Desarrollo**: Este proyecto ha sido conceptualizado, diseñado y guiado mediante **Vibe Coding**, utilizando asistencia avanzada de Inteligencia Artificial para la generación de código, arquitectura y contenedorización Docker.
 
@@ -11,13 +11,13 @@
 
 ## 📋 Descripción
 
-Aplicación web PWA auto-alojada con servidor local **Node.js + Express + Base de Datos Centralizada**. Permite sincronizar las mediciones de tensión arterial y pulsaciones en tiempo real entre múltiples dispositivos Android (tablets, móviles) conectados a la misma red Wi-Fi de tu casa o desde un servidor NAS/Raspberry Pi.
+Aplicación web PWA auto-alojada **100% Multiplataforma** con servidor local **Node.js + Express + Base de Datos Centralizada**. Al ser una Web App Progresiva, funciona y se ejecuta sin problemas en **Windows, Linux, macOS, Android y iOS**. Permite sincronizar las mediciones de tensión arterial y pulsaciones en tiempo real entre múltiples dispositivos conectados a la misma red Wi-Fi doméstica o desde un servidor NAS / Raspberry Pi.
 
 ---
 
 ## ✨ Características Destacadas
 
-- **Sincronización Multi-Dispositivo**: Cualquier registro o cambio de configuración en tu tablet Android se actualiza automáticamente en la base de datos centralizada del servidor.
+- **Sincronización Multi-Dispositivo & Multiplataforma**: Acceso instantáneo desde tu PC Windows, Linux, Mac, móvil o tablet Android/iOS. Cualquier registro o cambio se actualiza automáticamente en la base de datos centralizada.
 - **Ruleta Táctil & Teclado Numérico**: Selección rápida centrada automáticamente en la última medición realizada.
 - **Filtro de Síndrome de Bata Blanca**: Opción para atenuar lecturas elevadas iniciales producidas por la ansiedad del momento (intervalos de 5, 10 o 15 minutos).
 - **Informes PDF con Doble Eje Y**: Gráfico vectorial impreso con curva de tensión y línea de pulsaciones en el margen derecho.
