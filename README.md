@@ -1,6 +1,11 @@
-# Servidor Centralizado de Registro de Tensión Arterial (Self-Hosted / Multi-Dispositivo) 🩺
+# Servidor Centralizado de Registro de Tensión Arterial (Self-Hosted) 🩺
 
-> ⚠️ **Nota:** Esta es una **primera versión en fase de pruebas (Beta / v1.0.0-beta)**. Está diseñada para probar la sincronización en red local desde múltiples dispositivos Android y servidores domésticos.
+![Built with Vibe Coding](https://img.shields.io/badge/Built%20with-Vibe%20Coding%20%26%20AI-7c3aed?style=for-the-badge&logo=sparkles)
+![Estado](https://img.shields.io/badge/Estado-v1.0.0--beta-orange?style=for-the-badge)
+
+> ⚠️ **Nota de Versión:** Esta es una **primera versión en fase de pruebas (v1.0.0-beta)**. Está diseñada para probar la sincronización en red local desde múltiples dispositivos Android y servidores domésticos.
+>
+> ✨ **Metodología de Desarrollo**: Este proyecto ha sido conceptualizado, diseñado y guiado mediante **Vibe Coding**, utilizando asistencia avanzada de Inteligencia Artificial para la generación de código, arquitectura y contenedorización Docker.
 
 ---
 
@@ -13,7 +18,7 @@ Aplicación web PWA auto-alojada con servidor local **Node.js + Express + Base d
 ## ✨ Características Destacadas
 
 - **Sincronización Multi-Dispositivo**: Cualquier registro o cambio de configuración en tu tablet Android se actualiza automáticamente en la base de datos centralizada del servidor.
-- **Ruleta Táctil & Teclado Numérico**: Sistema dual con selección rápida centrada en la última medición realizada.
+- **Ruleta Táctil & Teclado Numérico**: Selección rápida centrada automáticamente en la última medición realizada.
 - **Filtro de Síndrome de Bata Blanca**: Opción para atenuar lecturas elevadas iniciales producidas por la ansiedad del momento (intervalos de 5, 10 o 15 minutos).
 - **Informes PDF con Doble Eje Y**: Gráfico vectorial impreso con curva de tensión y línea de pulsaciones en el margen derecho.
 - **Copias de Seguridad CSV**: Formato de archivo unificado (`tension_arterial_daily_AAAA-MM-DD_HH-MM-SS.csv`) con fecha y hora exacta.
