@@ -26,6 +26,17 @@ Aplicación web PWA auto-alojada **100% Multiplataforma** con servidor local **N
 
 ---
 
+## 💾 Base de Datos y Almacenamiento
+
+El servidor utiliza una **base de datos centralizada basada en JSON (`database.json`)** ligera y sin dependencias externas:
+
+- **Almacenamiento Persistente**: Guardado de forma segura en `./data/database.json` (vinculado al volumen de datos `/app/data` en Docker).
+- **Cero Configuración (Zero-Config)**: No requiere bases de datos externas adicionales (MySQL, PostgreSQL, etc.). El servidor crea e inicializa el archivo automáticamente al iniciarse.
+- **Sincronización en Tiempo Real**: Toda medición, eliminación o cambio de configuración realizado desde cualquier dispositivo se guarda inmediatamente en el servidor y se sincroniza al instante con los demás dispositivos de la red.
+- **Portabilidad Total**: Hacer copias de seguridad o migrar de servidor es tan sencillo como copiar o respaldar el archivo `database.json`.
+
+---
+
 ## 🚀 Instalación y Despliegue
 
 ### Opción 1: Con Docker Compose (Recomendado para NAS / Servidores)
