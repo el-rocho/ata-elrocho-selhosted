@@ -14,18 +14,26 @@ FROM node:20-alpine AS runner
 
 WORKDIR /app
 
-ENV NODE_ENV=production
-ENV PORT=3000
+ENV NODE_ENV=production \
+    PORT=3000 \
+    DATA_DIR=/app/data
 
 COPY package*.json ./
-RUN npm ci --only=production
+RUN npm ci --omit=dev
 
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/server ./server
 
-# Volumen persistente para la base de datos JSON / SQLite
+# Crear carpeta de datos con permisos adecuados para el usuario node
+RUN mkdir -p /app/data && chown -R node:node /app
+
+USER node
+
 VOLUME ["/app/data"]
 
 EXPOSE 3000
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:3000/api/settings || exit 1
 
 CMD ["node", "server/index.js"]

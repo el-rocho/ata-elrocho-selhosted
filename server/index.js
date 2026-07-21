@@ -14,7 +14,7 @@ app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 
 // Ruta de almacenamiento de la base de datos centralizada
-const DATA_DIR = path.join(__dirname, '../data');
+const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, '../data');
 const DB_FILE = path.join(DATA_DIR, 'database.json');
 
 if (!fs.existsSync(DATA_DIR)) {
@@ -219,6 +219,11 @@ app.post('/api/settings', (req, res) => {
   db.settings = { ...DEFAULT_SETTINGS, ...newSettings };
   writeDB(db);
   res.json(db.settings);
+});
+
+// Manejo de peticiones a la API no encontradas
+app.all('/api/*', (req, res) => {
+  res.status(404).json({ error: 'Ruta API no encontrada' });
 });
 
 const DIST_DIR = path.join(__dirname, '../dist');
