@@ -26,14 +26,17 @@ Aplicación web PWA auto-alojada **100% Multiplataforma** con servidor local **N
 
 ---
 
-## 💾 Base de Datos y Almacenamiento
+## 💾 Arquitectura de Almacenamiento: Base de Datos JSON (`database.json`)
 
-El servidor utiliza una **base de datos centralizada basada en JSON (`database.json`)** ligera y sin dependencias externas:
+El servidor utiliza una **base de datos plana centralizada basada en JSON (`database.json`)** diseñada a medida para entornos domésticos y familiares:
 
-- **Almacenamiento Persistente**: Guardado de forma segura en `./data/database.json` (vinculado al volumen de datos `/app/data` en Docker).
-- **Cero Configuración (Zero-Config)**: No requiere bases de datos externas adicionales (MySQL, PostgreSQL, etc.). El servidor crea e inicializa el archivo automáticamente al iniciarse.
-- **Sincronización en Tiempo Real**: Toda medición, eliminación o cambio de configuración realizado desde cualquier dispositivo se guarda inmediatamente en el servidor y se sincroniza al instante con los demás dispositivos de la red.
-- **Portabilidad Total**: Hacer copias de seguridad o migrar de servidor es tan sencillo como copiar o respaldar el archivo `database.json`.
+### 💡 Razones del diseño y ventajas:
+- **Cero Dependencias Binarias (Zero-Config)**: No requiere motores de base de datos externos (SQLite, MySQL, PostgreSQL) ni paquetes nativos de C++. Esto garantiza compatibilidad 100% inmediata al desplegar en Docker en cualquier arquitectura (Raspberry Pi ARM32/ARM64, NAS x86_64, PC Windows/Linux).
+- **Legibilidad y Transparencia**: El archivo `database.json` se almacena en texto plano legible en `./data/database.json` (vinculado al volumen persistente `/app/data` de Docker). Se puede abrir, inspeccionar o editar con cualquier editor de texto.
+- **Portabilidad y Respaldos Inmediatos**: Hacer una copia de seguridad o migrar de servidor es tan sencillo como copiar el archivo `database.json`.
+- **Sincronización en Tiempo Real**: Cualquier medición grabada o modificada desde un dispositivo se guarda instantáneamente y se refleja en el resto de móviles o tablets de la red local.
+
+> ℹ️ **Nota de Diseño**: Para uso doméstico y familiar (cientos o miles de registros), la base de datos JSON ofrece un rendimiento impecable e instantáneo. Para escenarios empresariales masivos con millones de tomas simultáneas, SQLite o bases de datos SQL relacionales serían la alternativa.
 
 ---
 
