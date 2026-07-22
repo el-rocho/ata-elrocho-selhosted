@@ -157,7 +157,7 @@ export const ReadingForm: React.FC<ReadingFormProps> = ({
               onClick={() => handleToggleInputMode('keyboard')}
               title="Introducir mediante teclado numérico"
             >
-              <Keyboard size={14} />
+              <Keyboard size={18} />
               <span>Teclado</span>
             </button>
             <button
@@ -166,7 +166,7 @@ export const ReadingForm: React.FC<ReadingFormProps> = ({
               onClick={() => handleToggleInputMode('wheel')}
               title="Introducir mediante ruleta táctil de selección rápida"
             >
-              <Sliders size={14} />
+              <Sliders size={18} />
               <span>Ruleta</span>
             </button>
           </div>
@@ -195,7 +195,6 @@ export const ReadingForm: React.FC<ReadingFormProps> = ({
                   className="input-number input-sys"
                   required
                 />
-                <span className="input-sublabel">Máxima</span>
               </div>
             </div>
 
@@ -216,7 +215,6 @@ export const ReadingForm: React.FC<ReadingFormProps> = ({
                   className="input-number input-dia"
                   required
                 />
-                <span className="input-sublabel">Mínima</span>
               </div>
             </div>
 
@@ -237,7 +235,6 @@ export const ReadingForm: React.FC<ReadingFormProps> = ({
                   className="input-number input-pulse"
                   required
                 />
-                <span className="input-sublabel">Ritmo cardíaco</span>
               </div>
             </div>
           </div>
