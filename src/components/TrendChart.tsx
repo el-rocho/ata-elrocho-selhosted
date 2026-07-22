@@ -183,8 +183,8 @@ export const TrendChart: React.FC<TrendChartProps> = ({ sessions }) => {
             opacity={0.7}
           />
 
-          <path d={sysPathD} fill="none" stroke="#ef4444" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-          <path d={diaPathD} fill="none" stroke="#3b82f6" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+          <path d={sysPathD} fill="none" stroke="#ef4444" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          <path d={diaPathD} fill="none" stroke="#3b82f6" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
 
           {filteredSessions.map((s, i) => {
             const sysP = sysPoints[i];
@@ -200,14 +200,14 @@ export const TrendChart: React.FC<TrendChartProps> = ({ sessions }) => {
                   x2={diaP.x}
                   y2={diaP.y}
                   stroke="var(--text-muted)"
-                  strokeWidth="1.5"
+                  strokeWidth="1"
                   opacity={0.3}
                 />
 
                 <circle
                   cx={pulseP.x}
                   cy={pulseP.y}
-                  r="3.5"
+                  r="3"
                   fill="var(--accent-pulse)"
                   opacity={0.8}
                   onMouseEnter={() => setActiveTooltip(s)}
@@ -218,10 +218,10 @@ export const TrendChart: React.FC<TrendChartProps> = ({ sessions }) => {
                 <circle
                   cx={sysP.x}
                   cy={sysP.y}
-                  r="5"
+                  r="3.5"
                   fill="#ef4444"
                   stroke="#ffffff"
-                  strokeWidth="2"
+                  strokeWidth="1.5"
                   onMouseEnter={() => setActiveTooltip(s)}
                   onClick={() => setActiveTooltip(s)}
                   className="point-interactive"
@@ -230,10 +230,10 @@ export const TrendChart: React.FC<TrendChartProps> = ({ sessions }) => {
                 <circle
                   cx={diaP.x}
                   cy={diaP.y}
-                  r="5"
+                  r="3.5"
                   fill="#3b82f6"
                   stroke="#ffffff"
-                  strokeWidth="2"
+                  strokeWidth="1.5"
                   onMouseEnter={() => setActiveTooltip(s)}
                   onClick={() => setActiveTooltip(s)}
                   className="point-interactive"

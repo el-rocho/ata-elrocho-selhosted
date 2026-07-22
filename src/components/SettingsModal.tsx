@@ -92,7 +92,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
         <div className="modal-header">
           <div className="modal-title-group">
             <Settings size={22} className="modal-icon" />
-            <h2>Configuración del Servidor Centralizado</h2>
+            <h2>Configuración del Servidor</h2>
           </div>
           <button className="btn-close-modal" onClick={onClose} aria-label="Cerrar">
             <X size={20} />
@@ -104,7 +104,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
           <div className="settings-section">
             <div className="field-label">
               <User size={16} className="text-blue" />
-              <span>Perfil del Paciente (Compartido en el Servidor):</span>
+              <span>Perfil del Paciente:</span>
             </div>
             
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '8px' }}>

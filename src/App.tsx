@@ -203,7 +203,7 @@ export function App() {
       />
 
       <footer className="app-footer">
-        <span>Control Tensión Arterial Servidor Local &copy; {new Date().getFullYear()}</span>
+        <span>Control Tensión Arterial Selfhosted</span>
         <span> &bull; </span>
         <button
           type="button"
