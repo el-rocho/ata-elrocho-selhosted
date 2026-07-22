@@ -19,10 +19,22 @@ Aplicación web PWA auto-alojada **100% Multiplataforma** con servidor local **N
 
 - **Sincronización Multi-Dispositivo & Multiplataforma**: Acceso instantáneo desde tu PC Windows, Linux, Mac, móvil o tablet Android/iOS. Cualquier registro o cambio se actualiza automáticamente en la base de datos centralizada.
 - **Ruleta Táctil & Teclado Numérico**: Selección rápida centrada automáticamente en la última medición realizada.
-- **Filtro de Síndrome de Bata Blanca**: Opción para atenuar lecturas elevadas iniciales producidas por la ansiedad del momento (intervalos de 5, 10 o 15 minutos).
+- **Filtro de Síndrome de Bata Blanca**: Opción para atenuar lecturas elevadas iniciales producidas por la ansiedad del momento (intervalos de 3, 5 o 10 minutos entre tomas consecutivas).
 - **Informes PDF con Doble Eje Y**: Gráfico vectorial impreso con curva de tensión y línea de pulsaciones en el margen derecho.
-- **Copias de Seguridad CSV**: Formato de archivo unificado (`tension_arterial_daily_AAAA-MM-DD_HH-MM-SS.csv`) con fecha y hora exacta.
+- **Copias de Seguridad CSV**: Guardadas físicamente en la carpeta `data/backups/` del Servidor y opción de descarga directa.
 - **Contenedorización Docker**: Listo para desplegar con un comando mediante Docker y Docker-Compose.
+
+---
+
+## 🛡️ Filtro de Síndrome de Bata Blanca (Algoritmo Médico)
+
+El **Filtro de Síndrome de Bata Blanca** mitiga la distorsión generada por el sesgo de alerta o ansiedad inicial del paciente al colocarse el manguito de tensión.
+
+### 🔬 Cómo funciona el algoritmo:
+1. **Agrupación Consecutiva**: Se agrupan dentro de una misma sesión las tomas donde el intervalo entre una toma y la anterior sea menor al margen configurado (**3, 5 o 10 minutos**).
+2. **Sesiones de 2 tomas**: Si la 1ª toma es significativamente superior a la 2ª ($\ge 8$ mmHg sistólica / $\ge 4$ mmHg diastólica), se descarta la 1ª toma reteniendo la 2ª. En caso contrario, se promedian ambas.
+3. **Sesiones de 3 tomas**: Se descarta siempre la 1ª toma (por su bajo valor diagnóstico de aclimatación al manguito) y se calcula la media con las 2 tomas restantes.
+4. **Sesiones de 4 o más tomas**: Se descarta la 1ª toma y se continúan descartando tomas iniciales elevadas (2ª, 3ª...) por ansiedad prolongada, **siempre y cuando queden al menos 3 tomas válidas** para calcular la media definitiva.
 
 ---
 
@@ -35,8 +47,6 @@ El servidor utiliza una **base de datos plana centralizada basada en JSON (`data
 - **Legibilidad y Transparencia**: El archivo `database.json` se almacena en texto plano legible en `./data/database.json` (vinculado al volumen persistente `/app/data` de Docker). Se puede abrir, inspeccionar o editar con cualquier editor de texto.
 - **Portabilidad y Respaldos Inmediatos**: Hacer una copia de seguridad o migrar de servidor es tan sencillo como copiar el archivo `database.json`.
 - **Sincronización en Tiempo Real**: Cualquier medición grabada o modificada desde un dispositivo se guarda instantáneamente y se refleja en el resto de móviles o tablets de la red local.
-
-> ℹ️ **Nota de Diseño**: Para uso doméstico y familiar (cientos o miles de registros), la base de datos JSON ofrece un rendimiento impecable e instantáneo. Para escenarios empresariales masivos con millones de tomas simultáneas, SQLite o bases de datos SQL relacionales serían la alternativa.
 
 ---
 
