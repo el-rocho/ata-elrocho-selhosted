@@ -221,3 +221,18 @@ export async function saveSettingsAPI(settings: AppSettings): Promise<AppSetting
     return settings;
   }
 }
+
+export async function generateServerBackupAPI(csvContent: string, filenamePrefix: string): Promise<{ success: boolean; filename: string; timestamp: string }> {
+  try {
+    const res = await fetch(`${API_BASE}/backups/generate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ csvContent, filenamePrefix }),
+    });
+    if (!res.ok) throw new Error('Error al enviar copia de seguridad al servidor');
+    return await res.json();
+  } catch (error) {
+    console.warn('No se pudo guardar la copia física en el servidor:', error);
+    return { success: false, filename: '', timestamp: new Date().toISOString() };
+  }
+}

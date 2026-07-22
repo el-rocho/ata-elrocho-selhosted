@@ -16,9 +16,13 @@ app.use(express.json({ limit: '10mb' }));
 // Ruta de almacenamiento de la base de datos centralizada
 const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, '../data');
 const DB_FILE = path.join(DATA_DIR, 'database.json');
+const BACKUPS_DIR = path.join(DATA_DIR, 'backups');
 
 if (!fs.existsSync(DATA_DIR)) {
   fs.mkdirSync(DATA_DIR, { recursive: true });
+}
+if (!fs.existsSync(BACKUPS_DIR)) {
+  fs.mkdirSync(BACKUPS_DIR, { recursive: true });
 }
 
 const DEFAULT_SETTINGS = {
@@ -219,6 +223,44 @@ app.post('/api/settings', (req, res) => {
   db.settings = { ...DEFAULT_SETTINGS, ...newSettings };
   writeDB(db);
   res.json(db.settings);
+});
+
+app.post('/api/backups/generate', (req, res) => {
+  try {
+    const { csvContent, filenamePrefix } = req.body;
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const seconds = String(now.getSeconds()).padStart(2, '0');
+    const dateTimeStr = `${year}-${month}-${day}_${hours}-${minutes}-${seconds}`;
+    const filename = `${filenamePrefix || 'tension_arterial_backup'}_${dateTimeStr}.csv`;
+    const filePath = path.join(BACKUPS_DIR, filename);
+
+    if (csvContent) {
+      fs.writeFileSync(filePath, csvContent, 'utf-8');
+    }
+
+    const db = readDB();
+    db.settings = {
+      ...(db.settings || DEFAULT_SETTINGS),
+      lastBackupTimestamp: now.toISOString(),
+    };
+    writeDB(db);
+
+    console.log(`✓ Copia de seguridad guardada en servidor: ${filePath}`);
+    res.json({
+      success: true,
+      filename,
+      filePath,
+      timestamp: now.toISOString(),
+    });
+  } catch (error) {
+    console.error('Error al guardar copia en el servidor:', error);
+    res.status(500).json({ error: 'Error al escribir copia en disco del servidor' });
+  }
 });
 
 // Manejo de peticiones a la API no encontradas

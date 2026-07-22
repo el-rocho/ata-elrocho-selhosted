@@ -14,7 +14,8 @@ import {
 } from './services/storageService';
 import { processReadingsIntoSessions } from './utils/whiteCoatAlgorithm';
 import { checkAndExecuteAutoBackup } from './utils/backupScheduler';
-import { exportToCSV } from './utils/exportCsv';
+import { exportToCSV, buildCSVContent } from './utils/exportCsv';
+import { generateServerBackupAPI } from './services/apiService';
 import { Header } from './components/Header';
 import { ReadingForm } from './components/ReadingForm';
 import { WhiteCoatBanner } from './components/WhiteCoatBanner';
@@ -88,7 +89,12 @@ export function App() {
       return;
     }
     const now = new Date();
-    // Unificado: tension_arterial_AAAA-MM-DD_HH-MM-SS.csv
+    const csvContent = buildCSVContent(sessions, { preset: 'all' }, {
+      patientName: settings.patientName,
+      patientSex: settings.patientSex,
+      patientAge: settings.patientAge,
+    });
+    generateServerBackupAPI(csvContent, 'tension_arterial_manual');
     exportToCSV(sessions, { preset: 'all' }, 'tension_arterial', {
       patientName: settings.patientName,
       patientSex: settings.patientSex,
@@ -99,7 +105,7 @@ export function App() {
       lastBackupTimestamp: now.toISOString(),
     };
     handleUpdateSettings(updatedSettings);
-    setNotificationMsg('✓ Copia de seguridad CSV generada y descargada.');
+    setNotificationMsg('✓ Copia de seguridad guardada en Servidor (data/backups/) y descargada.');
     setTimeout(() => setNotificationMsg(null), 5000);
   };
 

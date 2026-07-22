@@ -1,8 +1,9 @@
 import type { BloodPressureSession, AppSettings } from '../types/bloodPressure';
-import { exportToCSV } from './exportCsv';
+import { buildCSVContent } from './exportCsv';
+import { generateServerBackupAPI } from '../services/apiService';
 
 /**
- * Comprueba si corresponde realizar una copia de seguridad automática en CSV
+ * Comprueba si corresponde realizar una copia de seguridad automática en el Servidor
  * y la ejecuta si ha vencido el plazo configurado (diaria a las 00:00, semanal o mensual).
  */
 export function checkAndExecuteAutoBackup(
@@ -47,9 +48,15 @@ export function checkAndExecuteAutoBackup(
   }
 
   if (isDue) {
-    // Unificar formato de nombre: tension_arterial_daily_AAAA-MM-DD_HH-MM-SS.csv
     const prefix = `tension_arterial_${settings.backupFrequency}`;
-    exportToCSV(sessions, { preset: 'all' }, prefix);
+    const csvContent = buildCSVContent(sessions, { preset: 'all' }, {
+      patientName: settings.patientName,
+      patientSex: settings.patientSex,
+      patientAge: settings.patientAge,
+    });
+
+    // Guardar físicamente en la carpeta data/backups/ del Servidor
+    generateServerBackupAPI(csvContent, prefix);
 
     onUpdateSettings({
       ...settings,

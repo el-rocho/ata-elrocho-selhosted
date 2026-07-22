@@ -41,12 +41,11 @@ export function filterSessionsByDateRange(
   });
 }
 
-export function exportToCSV(
+export function buildCSVContent(
   sessions: BloodPressureSession[],
   dateRange: DateRange,
-  filenamePrefix = 'tension_arterial',
   options: ExportReportOptions = {}
-): void {
+): string {
   const filtered = filterSessionsByDateRange(sessions, dateRange);
 
   const headers = [
@@ -102,7 +101,16 @@ export function exportToCSV(
     ].join(';');
   });
 
-  const csvContent = '\uFEFF' + metadataHeader + headers.join(';') + '\n' + rows.join('\n');
+  return '\uFEFF' + metadataHeader + headers.join(';') + '\n' + rows.join('\n');
+}
+
+export function exportToCSV(
+  sessions: BloodPressureSession[],
+  dateRange: DateRange,
+  filenamePrefix = 'tension_arterial',
+  options: ExportReportOptions = {}
+): void {
+  const csvContent = buildCSVContent(sessions, dateRange, options);
 
   const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
   const url = URL.createObjectURL(blob);
