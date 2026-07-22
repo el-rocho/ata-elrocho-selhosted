@@ -197,10 +197,10 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             <div className="settings-subcard">
               <div className="field-label" style={{ fontSize: '12px' }}>
                 <Folder size={14} className="text-blue" />
-                <span>Almacenamiento en Servidor: <strong>Carpeta física data/backups/ en disco</strong></span>
+                <span>Almacenamiento en Servidor: <strong>Carpeta data/backups/</strong></span>
               </div>
               <p className="settings-desc" style={{ marginTop: '4px', fontSize: '11px', lineHeight: '1.4' }}>
-                Las copias de seguridad automáticas se guardan físicamente en el disco del Servidor Local. También puedes generar y descargar una copia adicional en este dispositivo.
+                Las copias de seguridad automáticas se guardan en el disco del Servidor. Puede descargar una copia en el dispositivo usando el botón.
               </p>
 
               <div className="backup-meta-row" style={{ marginTop: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '11px', color: 'var(--text-muted)' }}>
@@ -208,7 +208,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   <CalendarCheck size={12} className="inline-icon" /> Última copia: <strong>{lastBackupStr}</strong>
                 </span>
                 <button type="button" className="btn-subtle-reset" onClick={onTriggerManualBackup}>
-                  Generar en Servidor y Descargar
+                  Descargar copia ahora
                 </button>
               </div>
             </div>
