@@ -3,6 +3,7 @@ import { PlusCircle, Activity, Armchair, FileText, Keyboard, Sliders } from 'luc
 import type { ArmPosition, AppSettings, BloodPressureReading, InputMode } from '../types/bloodPressure';
 import { getHealthCategory } from '../utils/healthClassification';
 import { WheelPicker } from './WheelPicker';
+import { useLanguage } from '../i18n/LanguageContext';
 
 interface ReadingFormProps {
   onAddReading: (reading: {
@@ -23,8 +24,10 @@ export const ReadingForm: React.FC<ReadingFormProps> = ({
   onUpdateInputMode,
   lastReading,
 }) => {
+  const { t, language } = useLanguage();
   const [inputMode, setInputMode] = useState<InputMode>(settings.preferredInputMode || 'keyboard');
 
+  // Inicializar los valores centrados en la última medición realizada o en valores medios por defecto (120 / 80 / 72)
   const initialSys = lastReading ? lastReading.systolic : 120;
   const initialDia = lastReading ? lastReading.diastolic : 80;
   const initialPulse = lastReading ? lastReading.heartRate : 72;
@@ -38,6 +41,7 @@ export const ReadingForm: React.FC<ReadingFormProps> = ({
 
   const activeInputMode = settings.preferredInputMode || inputMode;
 
+  // Sincronizar brazo y modo de entrada predeterminado si cambia la configuración
   useEffect(() => {
     setArm(settings.defaultArm || 'left');
     if (settings.preferredInputMode) {
@@ -45,6 +49,7 @@ export const ReadingForm: React.FC<ReadingFormProps> = ({
     }
   }, [settings.defaultArm, settings.preferredInputMode]);
 
+  // Actualizar valores iniciales cuando entra una nueva medición
   useEffect(() => {
     if (lastReading) {
       setSystolic(lastReading.systolic);
@@ -55,8 +60,9 @@ export const ReadingForm: React.FC<ReadingFormProps> = ({
 
   const liveSystolic = typeof systolic === 'number' ? systolic : 120;
   const liveDiastolic = typeof diastolic === 'number' ? diastolic : 80;
-  const category = getHealthCategory(liveSystolic, liveDiastolic);
+  const category = getHealthCategory(liveSystolic, liveDiastolic, language);
 
+  // Auto-seleccionar todo el texto al tocar/enfocar un campo numérico
   const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
     e.target.select();
   };
@@ -77,19 +83,19 @@ export const ReadingForm: React.FC<ReadingFormProps> = ({
     const pulse = Number(heartRate);
 
     if (!sys || sys < 50 || sys > 260) {
-      setErrorMsg('Introduce un valor de sistólica válido (50 - 260 mmHg)');
+      setErrorMsg(t('form.validationAlert'));
       return;
     }
     if (!dia || dia < 30 || dia > 160) {
-      setErrorMsg('Introduce un valor de diastólica válido (30 - 160 mmHg)');
+      setErrorMsg(t('form.validationAlert'));
       return;
     }
     if (sys <= dia) {
-      setErrorMsg('La tensión sistólica debe ser superior a la diastólica');
+      setErrorMsg(t('form.validationAlert'));
       return;
     }
     if (!pulse || pulse < 30 || pulse > 220) {
-      setErrorMsg('Introduce una frecuencia cardíaca válida (30 - 220 ppm)');
+      setErrorMsg(t('form.validationAlert'));
       return;
     }
 
@@ -110,7 +116,7 @@ export const ReadingForm: React.FC<ReadingFormProps> = ({
         <div className="form-title-group">
           <div className="form-title-left">
             <Activity className="icon-pulse" size={20} />
-            <h2>Nueva Medición</h2>
+            <h2>{t('form.title')}</h2>
           </div>
 
           {/* Badge de clasificación en tiempo real */}
@@ -125,49 +131,47 @@ export const ReadingForm: React.FC<ReadingFormProps> = ({
         </div>
 
         <div className="form-controls-wrapper">
+          {/* Selector Discreto de Brazo */}
           <div className="arm-selector-container">
             <label className="arm-label">
               <Armchair size={14} />
-              <span>Brazo:</span>
+              <span>{t('form.armLabel')}</span>
             </label>
             <div className="arm-chips">
               <button
                 type="button"
                 className={`arm-chip ${arm === 'left' ? 'active' : ''}`}
                 onClick={() => setArm('left')}
-                title="Medición tomada en brazo izquierdo"
               >
-                Izquierdo
+                {t('form.armLeft')}
               </button>
               <button
                 type="button"
                 className={`arm-chip ${arm === 'right' ? 'active' : ''}`}
                 onClick={() => setArm('right')}
-                title="Medición tomada en brazo derecho"
               >
-                Derecho
+                {t('form.armRight')}
               </button>
             </div>
           </div>
 
+          {/* Conmutador discreto Modo Teclado vs Modo Ruleta Rápida */}
           <div className="input-mode-toggle">
             <button
               type="button"
               className={`btn-mode-chip ${activeInputMode === 'keyboard' ? 'active' : ''}`}
               onClick={() => handleToggleInputMode('keyboard')}
-              title="Introducir mediante teclado numérico"
             >
               <Keyboard size={18} />
-              <span>Teclado</span>
+              <span>{t('form.modeKeyboard')}</span>
             </button>
             <button
               type="button"
               className={`btn-mode-chip ${activeInputMode === 'wheel' ? 'active' : ''}`}
               onClick={() => handleToggleInputMode('wheel')}
-              title="Introducir mediante ruleta táctil de selección rápida"
             >
               <Sliders size={18} />
-              <span>Ruleta</span>
+              <span>{t('form.modeWheel')}</span>
             </button>
           </div>
         </div>
@@ -177,10 +181,11 @@ export const ReadingForm: React.FC<ReadingFormProps> = ({
 
       <form onSubmit={handleSubmit} className="bp-form">
         {activeInputMode === 'keyboard' ? (
+          /* Modo 1: Introducción mediante Teclado Numérico */
           <div className="metrics-inputs-grid">
             <div className="input-group">
               <label htmlFor="systolic-input">
-                <span>Sistólica</span>
+                <span>{t('form.systolic')}</span>
                 <span className="unit">(mmHg)</span>
               </label>
               <div className="input-wrapper">
@@ -200,7 +205,7 @@ export const ReadingForm: React.FC<ReadingFormProps> = ({
 
             <div className="input-group">
               <label htmlFor="diastolic-input">
-                <span>Diastólica</span>
+                <span>{t('form.diastolic')}</span>
                 <span className="unit">(mmHg)</span>
               </label>
               <div className="input-wrapper">
@@ -220,8 +225,8 @@ export const ReadingForm: React.FC<ReadingFormProps> = ({
 
             <div className="input-group">
               <label htmlFor="pulse-input">
-                <span>Pulsaciones</span>
-                <span className="unit">(ppm)</span>
+                <span>{t('form.heartRate')}</span>
+                <span className="unit">({language === 'en' ? 'BPM' : 'ppm'})</span>
               </label>
               <div className="input-wrapper">
                 <input
@@ -239,6 +244,7 @@ export const ReadingForm: React.FC<ReadingFormProps> = ({
             </div>
           </div>
         ) : (
+          /* Modo 2: Ruleta Táctil de Selección Rápida */
           <div className="wheel-mode-container">
             <WheelPicker
               systolic={typeof systolic === 'number' ? systolic : 120}
@@ -251,6 +257,7 @@ export const ReadingForm: React.FC<ReadingFormProps> = ({
           </div>
         )}
 
+        {/* Campo de Nota Opcional a todo el ancho disponible */}
         <div className="form-notes-fullwidth" style={{ marginBottom: '20px' }}>
           <div className="input-wrapper-notes">
             <FileText size={16} className="notes-icon" />
@@ -258,7 +265,7 @@ export const ReadingForm: React.FC<ReadingFormProps> = ({
               type="text"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              placeholder="Añadir nota opcional (ej. en ayunas, reposo, sensaciones...)"
+              placeholder={t('form.notesPlaceholder')}
               className="input-notes"
             />
           </div>
@@ -266,7 +273,7 @@ export const ReadingForm: React.FC<ReadingFormProps> = ({
 
         <button type="submit" className="btn-submit-reading">
           <PlusCircle size={18} />
-          <span>Guardar Registro</span>
+          <span>{t('form.submit')}</span>
         </button>
       </form>
     </div>

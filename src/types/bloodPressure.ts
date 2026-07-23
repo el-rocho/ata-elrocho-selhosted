@@ -1,5 +1,5 @@
 /**
- * Modelos de datos para el seguimiento de la tensión arterial (Servidor Multi-Dispositivo)
+ * Modelos de datos para el seguimiento de la tensión arterial
  */
 
 export type ArmPosition = 'left' | 'right';
@@ -30,8 +30,10 @@ export interface BloodPressureSession {
 }
 
 export type BackupFrequency = 'disabled' | 'daily' | 'weekly' | 'monthly';
+export type LanguageOption = 'es' | 'en';
 
 export interface AppSettings {
+  language: LanguageOption; // Idioma de la aplicación ('es' / 'en')
   enableWhiteCoatFilter: boolean; // Activar/desactivar filtro de bata blanca
   whiteCoatIntervalMinutes: number; // Intervalo de tiempo máximo entre tomas (ej. 5, 10, 15 min)
   defaultArm: ArmPosition; // Brazo predeterminado ('left' / 'right')

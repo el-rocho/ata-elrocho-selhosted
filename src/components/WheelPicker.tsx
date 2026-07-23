@@ -1,5 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import { ChevronUp, ChevronDown } from 'lucide-react';
+import { useLanguage } from '../i18n/LanguageContext';
 
 interface WheelColumnProps {
   label: string;
@@ -22,14 +23,15 @@ const WheelColumn: React.FC<WheelColumnProps> = ({
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const isProgrammaticScrollRef = useRef<boolean>(false);
-  const ITEM_HEIGHT = 40;
+  const ITEM_HEIGHT = 40; // Altura de cada ítem en píxeles
 
+  // Generar array de valores válidos
   const values: number[] = [];
   for (let i = min; i <= max; i++) {
     values.push(i);
   }
 
-  // Centrar el scroll de la ruleta inicialmente y cuando cambie 'value' externamente (ej. 120/80/72)
+  // Centrar el scroll de la ruleta inicialmente y cuando cambie 'value' externamente
   useEffect(() => {
     if (containerRef.current) {
       const targetIndex = values.indexOf(value);
@@ -82,15 +84,17 @@ const WheelColumn: React.FC<WheelColumnProps> = ({
         <span className="wheel-unit">({unit})</span>
       </div>
 
+      {/* Botón Incrementar (+) */}
       <button
         type="button"
         className="btn-wheel-step"
         onClick={() => handleStep(1)}
-        title={`Incrementar ${label}`}
+        title={`+1 ${label}`}
       >
         <ChevronUp size={18} />
       </button>
 
+      {/* Tambor Deslizable */}
       <div
         className="wheel-tumbler-container"
         ref={containerRef}
@@ -123,11 +127,12 @@ const WheelColumn: React.FC<WheelColumnProps> = ({
         <div className="wheel-spacer" style={{ height: ITEM_HEIGHT }} />
       </div>
 
+      {/* Botón Decrementar (-) */}
       <button
         type="button"
         className="btn-wheel-step"
         onClick={() => handleStep(-1)}
-        title={`Decrementar ${label}`}
+        title={`-1 ${label}`}
       >
         <ChevronDown size={18} />
       </button>
@@ -152,10 +157,12 @@ export const WheelPicker: React.FC<WheelPickerProps> = ({
   onChangeDiastolic,
   onChangeHeartRate,
 }) => {
+  const { language } = useLanguage();
+
   return (
     <div className="wheel-picker-grid">
       <WheelColumn
-        label="Sistólica"
+        label={language === 'en' ? 'Systolic' : 'Sistólica'}
         unit="mmHg"
         min={60}
         max={240}
@@ -164,7 +171,7 @@ export const WheelPicker: React.FC<WheelPickerProps> = ({
         accentClass="acc-sys"
       />
       <WheelColumn
-        label="Diastólica"
+        label={language === 'en' ? 'Diastolic' : 'Diastólica'}
         unit="mmHg"
         min={40}
         max={160}
@@ -173,8 +180,8 @@ export const WheelPicker: React.FC<WheelPickerProps> = ({
         accentClass="acc-dia"
       />
       <WheelColumn
-        label="Pulsaciones"
-        unit="ppm"
+        label={language === 'en' ? 'Pulse' : 'Pulsaciones'}
+        unit={language === 'en' ? 'BPM' : 'ppm'}
         min={40}
         max={200}
         value={heartRate}

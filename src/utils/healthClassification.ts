@@ -1,71 +1,77 @@
-import type { HealthCategoryInfo, HealthSeverity } from '../types/bloodPressure';
+import type { HealthCategoryInfo, HealthSeverity, LanguageOption } from '../types/bloodPressure';
+import { getTranslation } from '../i18n/translations';
 
-export const HEALTH_CATEGORIES: Record<HealthSeverity, HealthCategoryInfo> = {
+const BASE_CATEGORIES_STYLE: Record<HealthSeverity, { colorHex: string; badgeBg: string; badgeText: string }> = {
   optimal: {
-    key: 'optimal',
-    name: 'Óptima',
-    description: 'Sistólica < 120 y Diastólica < 80 mmHg',
     colorHex: '#10b981', // Verde esmeralda
     badgeBg: 'rgba(16, 185, 129, 0.15)',
-    badgeText: '#047857',
+    badgeText: '#059669',
   },
   normal: {
-    key: 'normal',
-    name: 'Normal',
-    description: 'Sistólica 120-129 o Diastólica 80-84 mmHg',
-    colorHex: '#3b82f6', // Azul brillante
+    colorHex: '#3b82f6', // Azul claro
     badgeBg: 'rgba(59, 130, 246, 0.15)',
-    badgeText: '#1d4ed8',
+    badgeText: '#2563eb',
   },
   elevated: {
-    key: 'elevated',
-    name: 'Normal-Alta',
-    description: 'Sistólica 130-139 o Diastólica 85-89 mmHg',
-    colorHex: '#f59e0b', // Ámbar / Naranja claro
+    colorHex: '#f59e0b', // Ámbar / Amarillo
     badgeBg: 'rgba(245, 158, 11, 0.15)',
-    badgeText: '#b45309',
+    badgeText: '#d97706',
   },
   stage1: {
-    key: 'stage1',
-    name: 'Hipertensión Grado 1',
-    description: 'Sistólica 140-159 o Diastólica 90-99 mmHg',
-    colorHex: '#f97316', // Naranja intenso
+    colorHex: '#f97316', // Naranja
     badgeBg: 'rgba(249, 115, 22, 0.15)',
-    badgeText: '#c2410c',
+    badgeText: '#ea580c',
   },
   stage2: {
-    key: 'stage2',
-    name: 'Hipertensión Grado 2',
-    description: 'Sistólica 160-179 o Diastólica 100-109 mmHg',
-    colorHex: '#ef4444', // Rojo fuerte
+    colorHex: '#ef4444', // Rojo
     badgeBg: 'rgba(239, 68, 68, 0.15)',
-    badgeText: '#b91c1c',
+    badgeText: '#dc2626',
   },
   crisis: {
-    key: 'crisis',
-    name: 'Crisis Hipertensiva',
-    description: 'Sistólica ≥ 180 o Diastólica ≥ 110 mmHg',
-    colorHex: '#881337', // Rojo carmesí oscuro / Púrpura
-    badgeBg: 'rgba(136, 19, 55, 0.18)',
-    badgeText: '#881337',
+    colorHex: '#991b1b', // Rojo oscuro / Púrpura
+    badgeBg: 'rgba(153, 27, 27, 0.2)',
+    badgeText: '#991b1b',
   },
 };
 
-export function getHealthCategory(systolic: number, diastolic: number): HealthCategoryInfo {
+export function getHealthCategoriesMap(lang: LanguageOption = 'es'): Record<HealthSeverity, HealthCategoryInfo> {
+  const keys: HealthSeverity[] = ['optimal', 'normal', 'elevated', 'stage1', 'stage2', 'crisis'];
+  const map = {} as Record<HealthSeverity, HealthCategoryInfo>;
+
+  keys.forEach((key) => {
+    map[key] = {
+      key,
+      name: getTranslation(lang, `trend.categories.${key}.name`),
+      description: getTranslation(lang, `trend.categories.${key}.desc`),
+      ...BASE_CATEGORIES_STYLE[key],
+    };
+  });
+
+  return map;
+}
+
+export const HEALTH_CATEGORIES = getHealthCategoriesMap('es');
+
+/**
+ * Clasifica una lectura de tensión arterial según las guías estándar OMS/AHA/ESH.
+ */
+export function getHealthCategory(systolic: number, diastolic: number, lang: LanguageOption = 'es'): HealthCategoryInfo {
+  const categories = getHealthCategoriesMap(lang);
+
   if (systolic >= 180 || diastolic >= 110) {
-    return HEALTH_CATEGORIES.crisis;
+    return categories.crisis;
   }
-  if ((systolic >= 160 && systolic <= 179) || (diastolic >= 100 && diastolic <= 109)) {
-    return HEALTH_CATEGORIES.stage2;
+  if ((systolic >= 160 && systolic < 180) || (diastolic >= 100 && diastolic < 110)) {
+    return categories.stage2;
   }
-  if ((systolic >= 140 && systolic <= 159) || (diastolic >= 90 && diastolic <= 99)) {
-    return HEALTH_CATEGORIES.stage1;
+  if ((systolic >= 140 && systolic < 160) || (diastolic >= 90 && diastolic < 100)) {
+    return categories.stage1;
   }
-  if ((systolic >= 130 && systolic <= 139) || (diastolic >= 85 && diastolic <= 89)) {
-    return HEALTH_CATEGORIES.elevated;
+  if ((systolic >= 130 && systolic < 140) || (diastolic >= 85 && diastolic < 90)) {
+    return categories.elevated;
   }
-  if ((systolic >= 120 && systolic <= 129) || (diastolic >= 80 && diastolic <= 84)) {
-    return HEALTH_CATEGORIES.normal;
+  if ((systolic >= 120 && systolic < 130) || (diastolic >= 80 && diastolic < 85)) {
+    return categories.normal;
   }
-  return HEALTH_CATEGORIES.optimal;
+  return categories.optimal;
 }
