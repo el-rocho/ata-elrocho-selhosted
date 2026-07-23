@@ -1,10 +1,8 @@
 # Servidor Centralizado de Registro de Tensión Arterial (Self-Hosted) 🩺
 
 ![Built with Vibe Coding](https://img.shields.io/badge/Built%20with-Vibe%20Coding%20%26%20AI-7c3aed?style=for-the-badge&logo=sparkles)
-![Estado](https://img.shields.io/badge/Estado-v1.0.0--beta-orange?style=for-the-badge)
+![Estado](https://img.shields.io/badge/Versión-v1.3.2--stable-green?style=for-the-badge)
 
-> ⚠️ **Nota de Versión:** Esta es una **primera versión en fase de pruebas (v1.0.0-beta)**. Está diseñada para sincronización en red local desde cualquier navegador o dispositivo (Windows, Linux, macOS, Android, iOS) y servidores domésticos.
->
 > ✨ **Metodología de Desarrollo**: Este proyecto ha sido conceptualizado, diseñado y guiado mediante **Vibe Coding**, utilizando asistencia avanzada de Inteligencia Artificial para la generación de código, arquitectura y contenedorización Docker.
 
 ---
@@ -17,10 +15,11 @@ Aplicación web PWA auto-alojada **100% Multiplataforma** con servidor local **N
 
 ## ✨ Características Destacadas
 
+- **Soporte Bilingüe Completo (Español / Inglés)**: Selección de idioma desde la pantalla de **Configuración** (🇪🇸 Español / 🇬🇧 English) con cambio instantáneo de interfaz, ruletas, notificaciones e informes.
 - **Sincronización Multi-Dispositivo & Multiplataforma**: Acceso instantáneo desde tu PC Windows, Linux, Mac, móvil o tablet Android/iOS. Cualquier registro o cambio se actualiza automáticamente en la base de datos centralizada.
 - **Ruleta Táctil & Teclado Numérico**: Selección rápida centrada automáticamente en la última medición realizada.
 - **Filtro de Síndrome de Bata Blanca**: Opción para atenuar lecturas elevadas iniciales producidas por la ansiedad del momento (intervalos de 3, 5 o 10 minutos entre tomas consecutivas).
-- **Informes PDF con Doble Eje Y**: Gráfico vectorial impreso con curva de tensión y línea de pulsaciones en el margen derecho.
+- **Informes PDF con Doble Eje Y**: Gráfico vectorial impreso con curva de tensión y línea de pulsaciones en el margen derecho en el idioma seleccionado.
 - **Copias de Seguridad CSV**: Guardadas físicamente en la carpeta `data/backups/` del Servidor y opción de descarga directa.
 - **Contenedorización Docker**: Listo para desplegar con un comando mediante Docker y Docker-Compose.
 
