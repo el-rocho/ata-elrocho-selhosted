@@ -1,7 +1,6 @@
 import React from 'react';
 import { ShieldCheck, Download, Moon, Sun, Settings } from 'lucide-react';
 import { useLanguage } from '../i18n/LanguageContext';
-
 import { AppLogo } from './AppLogo';
 
 interface HeaderProps {

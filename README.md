@@ -1,31 +1,47 @@
-# Servidor Centralizado de Registro de Tensión Arterial (Self-Hosted) 🩺
+<p align="center">
+  <img src="public/logo-day.png" alt="Logo Control Tensión Arterial - Modo Día" width="160" height="160" />
+</p>
+
+# Control Tensión Arterial & Pulsaciones 🩺
 
 ![Built with Vibe Coding](https://img.shields.io/badge/Built%20with-Vibe%20Coding%20%26%20AI-7c3aed?style=for-the-badge&logo=sparkles)
-![Estado](https://img.shields.io/badge/Versión-v1.5.2--stable-green?style=for-the-badge)
+![Android APK](https://img.shields.io/badge/Android-APK%20Nativa%20v1.5.2-3DDC84?style=for-the-badge&logo=android)
+![Obtainium Compatible](https://img.shields.io/badge/Obtainium-Releases%20v1.5.2-2563eb?style=for-the-badge&logo=github)
+![Licencia](https://img.shields.io/badge/Licencia-MIT-blue?style=for-the-badge)
 
-> ✨ **Metodología de Desarrollo**: Este proyecto ha sido conceptualizado, diseñado y guiado mediante **Vibe Coding**, utilizando asistencia avanzada de Inteligencia Artificial para la generación de código, arquitectura y contenedorización Docker.
+Aplicación Nativa **Android (APK)** y web offline para el registro, seguimiento y análisis de la tensión arterial (sistólica y diastólica) y ritmo cardíaco (pulsaciones). Diseñada para ofrecer máxima privacidad en el dispositivo (compatible con **GrapheneOS** y Android estándar), **sin barra de navegador** y con funcionalidad 100% local sin envío de datos a servidores externos.
 
----
-
-## 📋 Descripción
-
-Aplicación web PWA auto-alojada **100% Multiplataforma** con servidor local **Node.js + Express + Base de Datos Centralizada**. Al ser una Web App Progresiva, funciona y se ejecuta sin problemas en **Windows, Linux, macOS, Android y iOS**. Permite sincronizar las mediciones de tensión arterial y pulsaciones en tiempo real entre múltiples dispositivos conectados a la misma red Wi-Fi doméstica o desde un servidor NAS / Raspberry Pi.
+> ✨ **Metodología de Desarrollo**: Este proyecto ha sido conceptualizado, diseñado y guiado mediante **Vibe Coding**, utilizando asistencia avanzada de Inteligencia Artificial para la generación de código y arquitectura.
 
 ---
 
-## ✨ Características Destacadas
+## 📱 Instalación y Actualizaciones (Obtainium & Releases)
 
-- **Soporte Bilingüe Completo (Español / Inglés)**: Selección de idioma desde la pantalla de **Configuración** (🇪🇸 Español / 🇬🇧 English) con cambio instantáneo de interfaz, ruletas, notificaciones e informes.
-- **Sincronización Multi-Dispositivo & Multiplataforma**: Acceso instantáneo desde tu PC Windows, Linux, Mac, móvil o tablet Android/iOS. Cualquier registro o cambio se actualiza automáticamente en la base de datos centralizada.
-- **Ruleta Táctil & Teclado Numérico**: Selección rápida centrada automáticamente en la última medición realizada.
-- **Filtro de Síndrome de Bata Blanca**: Opción para atenuar lecturas elevadas iniciales producidas por la ansiedad del momento (intervalos de 3, 5 o 10 minutos entre tomas consecutivas).
-- **Informes PDF con Doble Eje Y**: Gráfico vectorial impreso con curva de tensión y línea de pulsaciones en el margen derecho en el idioma seleccionado.
-- **Copias de Seguridad CSV**: Guardadas físicamente en la carpeta `data/backups/` del Servidor y opción de descarga directa.
-- **Contenedorización Docker**: Listo para desplegar con un comando mediante Docker y Docker-Compose.
+Las publicaciones oficiales y compilaciones del APK se generan automáticamente mediante **GitHub Actions** al publicar un Tag o Release en el repositorio.
+
+### 📲 Actualización Automática con Obtainium:
+La aplicación es totalmente compatible con **[Obtainium](https://github.com/ImranRaja1/Obtainium)**. Al añadir la URL del repositorio de GitHub (`https://github.com/el-rocho/cta-elrocho`), Obtainium detectará automáticamente las nuevas versiones (`v1.3.2`, etc.) y actualizará la App directamente en tu dispositivo Android.
+
+### 📥 Descarga Manual de Releases:
+1. Accede a la sección **[Releases del Repositorio](https://github.com/el-rocho/cta-elrocho/releases)**.
+2. Descarga la última versión del archivo `control-tension-arterial.apk`.
+3. Instala el paquete `.apk` en tu dispositivo Android.
 
 ---
 
-## 🛡️ Filtro de Síndrome de Bata Blanca (Algoritmo Médico)
+## 🚀 Características Principales
+
+- **Soporte Bilingüe Completo (Español / Inglés)**: Selección de idioma desde la pantalla de **Configuración** (🇪🇸 Español / 🇬🇧 English). Interfaz, ruletas, gráficos, notificaciones e informes exportados se adaptan al instante.
+- **Experiencia Nativa Android**: Funciona como una App independiente a pantalla completa sin la barra de direcciones del navegador.
+- **100% Offline y Privada (RGPD / GrapheneOS)**: Todos los datos residen exclusivamente en el almacenamiento interno de tu teléfono (`localStorage` / `IndexedDB`).
+- **Sistema Dual de Entrada**: Elige entre teclado numérico tradicional o **Ruleta Táctil de Selección Rápida** centrada en la última medición realizada.
+- **Filtro de Síndrome de Bata Blanca**: Algoritmo inteligente que descarta tomas iniciales elevadas producidas por la ansiedad del momento (intervalos de 3, 5 o 10 minutos entre tomas consecutivas).
+- **Informes PDF Médicos Bilingües**: Gráfico temporal con doble eje Y (tensión arterial + línea de pulsaciones en el eje derecho) y tabla detallada de registros.
+- **Exportación e Importación CSV**: Copias de seguridad automáticas con cabeceras y metadatos en el idioma seleccionado.
+
+---
+
+## 🛡️ Filtro de Síndrome de Bata Blanca
 
 El **Filtro de Síndrome de Bata Blanca** mitiga la distorsión generada por el sesgo de alerta o ansiedad inicial del paciente al colocarse el manguito de tensión.
 
@@ -37,46 +53,26 @@ El **Filtro de Síndrome de Bata Blanca** mitiga la distorsión generada por el 
 
 ---
 
-## 💾 Arquitectura de Almacenamiento: Base de Datos JSON (`database.json`)
+## 🌐 Estructura de Ramas
 
-El servidor utiliza una **base de datos plana centralizada basada en JSON (`database.json`)** diseñada a medida para entornos domésticos y familiares:
-
-### 💡 Razones del diseño y ventajas:
-- **Cero Dependencias Binarias (Zero-Config)**: No requiere motores de base de datos externos (SQLite, MySQL, PostgreSQL) ni paquetes nativos de C++. Esto garantiza compatibilidad 100% inmediata al desplegar en Docker en cualquier arquitectura (Raspberry Pi ARM32/ARM64, NAS x86_64, PC Windows/Linux).
-- **Legibilidad y Transparencia**: El archivo `database.json` se almacena en texto plano legible en `./data/database.json` (vinculado al volumen persistente `/app/data` de Docker). Se puede abrir, inspeccionar o editar con cualquier editor de texto.
-- **Portabilidad y Respaldos Inmediatos**: Hacer una copia de seguridad o migrar de servidor es tan sencillo como copiar el archivo `database.json`.
-- **Sincronización en Tiempo Real**: Cualquier medición grabada o modificada desde un dispositivo se guarda instantáneamente y se refleja en el resto de móviles o tablets de la red local.
+- **`main`**: Versión estable de producción.
+- **`dev`**: Rama de desarrollo activo para pruebas de características.
 
 ---
 
-## 🚀 Instalación y Despliegue
+## 🛠️ Desarrollo Local
 
-### Opción 1: Con Docker Compose (Recomendado para NAS / Servidores)
+```bash
+# Instalar dependencias
+npm install
 
-1. Clona el repositorio:
-   ```bash
-   git clone https://github.com/el-rocho/cta-elrocho-selhosted.git
-   cd cta-elrocho-selhosted
-   ```
-2. Levanta el contenedor:
-   ```bash
-   docker-compose up -d --build
-   ```
-3. La aplicación estará disponible en `http://<IP_DE_TU_SERVIDOR>:3000`. La base de datos persistente se guardará en la carpeta `./data`.
+# Iniciar servidor de desarrollo web
+npm run dev
 
----
+# Compilar proyecto web y sincronizar con Android nativo (Capacitor)
+npm run build
+npm run cap:sync
 
-### Opción 2: Con Node.js
-
-1. Instala las dependencias y compila:
-   ```bash
-   npm install
-   npm run start
-   ```
-2. Accede desde tu navegador o tablet Android en tu red local: `http://<IP_DE_TU_SERVIDOR>:3000`.
-
----
-
-## 🔒 Privacidad y RGPD
-
-Todos los datos permanecen 100% dentro de tu propia red local. No requiere servicios externos en la nube ni conexión a servidores de terceros.
+# Abrir el proyecto en Android Studio
+npm run cap:open
+```
