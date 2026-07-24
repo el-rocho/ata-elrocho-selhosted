@@ -1,7 +1,7 @@
 # Servidor Centralizado de Registro de Tensión Arterial (Self-Hosted) 🩺
 
 ![Built with Vibe Coding](https://img.shields.io/badge/Built%20with-Vibe%20Coding%20%26%20AI-7c3aed?style=for-the-badge&logo=sparkles)
-![Estado](https://img.shields.io/badge/Versión-v1.3.2--stable-green?style=for-the-badge)
+![Estado](https://img.shields.io/badge/Versión-v1.5.2--stable-green?style=for-the-badge)
 
 > ✨ **Metodología de Desarrollo**: Este proyecto ha sido conceptualizado, diseñado y guiado mediante **Vibe Coding**, utilizando asistencia avanzada de Inteligencia Artificial para la generación de código, arquitectura y contenedorización Docker.
 
