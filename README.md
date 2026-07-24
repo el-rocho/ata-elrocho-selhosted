@@ -23,6 +23,13 @@ Este repositorio corresponde a la **Versión Autoalojada Multi-usuario (Docker &
 - 🐳 **Versión Autoalojada (Este Repositorio)**: Diseñada para instalar en tu propio servidor doméstico o NAS (Synology, Unraid, Docker Compose) y permitir a **varios miembros de la familia (hasta 10 usuarios)** controlar su tensión arterial de forma centralizada con base de datos SQLite y **autenticación 2FA TOTP**.
 - 📱 **[Versión Individual / Móvil Android (APK / PWA)](https://github.com/el-rocho/cta-elrocho)**: Si prefieres una aplicación móvil **100% offline, nativa Android (APK)** y sin necesidad de instalar un servidor ni crear cuentas de usuario, te recomendamos utilizar la versión individual para un único dispositivo.
 
+### 🔄 Migración e Importación desde la Versión Individual (Móvil/APK):
+Si tú o algún familiar habéis estado utilizando la versión móvil individual y queréis migrar vuestro historial al servidor autoalojado:
+1. En la app móvil individual, pulsa **Exportar** y descarga el archivo de copia `.csv`.
+2. En el servidor autoalojado, inicia sesión con tu usuario familiar (ej. *"Carmen"*).
+3. Abre **Exportar / Imprimir** &rarr; pestaña **Importar** y selecciona el archivo `.csv`.
+4. El servidor asociará automáticamente todas tus tomas históricas a tu perfil de forma privada e inmune a duplicados en SQLite.
+
 ---
 
 ## 🚀 Características Principales de la Versión Autoalojada
