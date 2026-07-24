@@ -1,195 +1,142 @@
 import type { BloodPressureReading, AppSettings } from '../types/bloodPressure';
 
-const STORAGE_KEY = 'graphene_bp_readings_v1';
-const SETTINGS_KEY = 'graphene_bp_settings_v1';
-
 export const DEFAULT_SETTINGS: AppSettings = {
-  language: 'es', // Por defecto Español
-  enableWhiteCoatFilter: false, // Por defecto DESACTIVADO
-  whiteCoatIntervalMinutes: 5, // Por defecto 5 minutos (opciones: 5, 10, 15 min)
+  language: 'es',
+  enableWhiteCoatFilter: false,
+  whiteCoatIntervalMinutes: 5,
   defaultArm: 'left',
-  preferredInputMode: 'keyboard', // Por defecto teclado ('keyboard' / 'wheel')
+  preferredInputMode: 'keyboard',
   patientName: '',
   patientSex: '',
   patientAge: '',
-  backupFrequency: 'disabled', // Por defecto DESACTIVADAS según preferencia del usuario
+  backupFrequency: 'disabled',
   backupFolder: 'Descargas/Copias_Tension_Arterial',
   lastBackupTimestamp: undefined,
 };
 
-// Datos iniciales de demostración centrados en valores medios habituales (120/80 mmHg - 72 ppm)
-const INITIAL_DEMO_DATA: BloodPressureReading[] = [
-  {
-    id: 'demo-100',
-    timestamp: new Date().toISOString(),
-    systolic: 120,
-    diastolic: 80,
-    heartRate: 72,
-    arm: 'left',
-    notes: 'Medición habitual de control',
-  },
-  {
-    id: 'demo-5',
-    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24 * 1).toISOString(),
-    systolic: 124,
-    diastolic: 81,
-    heartRate: 70,
-    arm: 'left',
-    notes: 'Mañana en ayunas',
-  },
-  {
-    id: 'demo-4',
-    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2).toISOString(),
-    systolic: 118,
-    diastolic: 78,
-    heartRate: 69,
-    arm: 'left',
-    notes: 'Tras reposo',
-  },
-  {
-    id: 'demo-3',
-    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3).toISOString(),
-    systolic: 122,
-    diastolic: 80,
-    heartRate: 71,
-    arm: 'right',
-  },
-  {
-    id: 'demo-2',
-    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5).toISOString(),
-    systolic: 126,
-    diastolic: 82,
-    heartRate: 73,
-    arm: 'left',
-  },
-  {
-    id: 'demo-1',
-    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7).toISOString(),
-    systolic: 119,
-    diastolic: 79,
-    heartRate: 68,
-    arm: 'left',
-  },
-];
-
-export function getStoredReadings(): BloodPressureReading[] {
+export async function fetchReadingsFromServer(): Promise<BloodPressureReading[]> {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) {
-      saveStoredReadings(INITIAL_DEMO_DATA);
-      return INITIAL_DEMO_DATA;
-    }
-    return JSON.parse(raw) as BloodPressureReading[];
+    const res = await fetch('/api/readings', { credentials: 'include' });
+    if (!res.ok) return [];
+    return await res.json();
   } catch (error) {
-    console.error('Error al leer de localStorage:', error);
-    return INITIAL_DEMO_DATA;
+    console.error('Error al consultar mediciones del servidor:', error);
+    return [];
   }
 }
 
-export function saveStoredReadings(readings: BloodPressureReading[]): void {
+export async function addReadingToServer(newReading: Omit<BloodPressureReading, 'id'>): Promise<BloodPressureReading | null> {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(readings));
+    const res = await fetch('/api/readings', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify(newReading),
+    });
+    if (!res.ok) return null;
+    return await res.json();
   } catch (error) {
-    console.error('Error al guardar en localStorage:', error);
+    console.error('Error al guardar medición en el servidor:', error);
+    return null;
   }
 }
 
-export function clearAllStoredData(): void {
+export async function updateReadingOnServer(updatedReading: BloodPressureReading): Promise<boolean> {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify([]));
+    const res = await fetch(`/api/readings/${updatedReading.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify(updatedReading),
+    });
+    return res.ok;
   } catch (error) {
-    console.error('Error al eliminar datos de localStorage:', error);
+    console.error('Error al actualizar toma en el servidor:', error);
+    return false;
   }
 }
 
-export function getStoredSettings(): AppSettings {
+export async function deleteReadingFromServer(id: string): Promise<boolean> {
   try {
-    const raw = localStorage.getItem(SETTINGS_KEY);
-    if (!raw) return DEFAULT_SETTINGS;
-    const parsed = { ...DEFAULT_SETTINGS, ...JSON.parse(raw) };
-    if (!['es', 'en'].includes(parsed.language)) {
-      parsed.language = 'es';
-    }
-    if (![3, 5, 10].includes(parsed.whiteCoatIntervalMinutes)) {
-      parsed.whiteCoatIntervalMinutes = 5;
-    }
-    if (!['keyboard', 'wheel'].includes(parsed.preferredInputMode)) {
-      parsed.preferredInputMode = 'keyboard';
-    }
-    return parsed;
+    const res = await fetch(`/api/readings/${id}`, {
+      method: 'DELETE',
+      credentials: 'include',
+    });
+    return res.ok;
   } catch (error) {
-    console.error('Error al leer ajustes:', error);
+    console.error('Error al eliminar toma en el servidor:', error);
+    return false;
+  }
+}
+
+export async function deleteSessionFromServer(readingIds: string[]): Promise<boolean> {
+  try {
+    const res = await fetch('/api/sessions/delete', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ readingIds }),
+    });
+    return res.ok;
+  } catch (error) {
+    console.error('Error al eliminar sesión en el servidor:', error);
+    return false;
+  }
+}
+
+export async function clearAllReadingsOnServer(): Promise<boolean> {
+  try {
+    const res = await fetch('/api/readings/all/confirm', {
+      method: 'DELETE',
+      credentials: 'include',
+    });
+    return res.ok;
+  } catch (error) {
+    console.error('Error al vaciar historial en el servidor:', error);
+    return false;
+  }
+}
+
+export async function importReadingsToServer(imported: Omit<BloodPressureReading, 'id'>[]): Promise<{ addedCount: number; readings: BloodPressureReading[] }> {
+  try {
+    const res = await fetch('/api/readings/import', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify(imported),
+    });
+    if (!res.ok) return { addedCount: 0, readings: [] };
+    const data = await res.json();
+    return { addedCount: data.addedCount || 0, readings: data.readings || [] };
+  } catch (error) {
+    console.error('Error al importar mediciones en el servidor:', error);
+    return { addedCount: 0, readings: [] };
+  }
+}
+
+export async function fetchSettingsFromServer(): Promise<AppSettings> {
+  try {
+    const res = await fetch('/api/settings', { credentials: 'include' });
+    if (!res.ok) return DEFAULT_SETTINGS;
+    const data = await res.json();
+    return { ...DEFAULT_SETTINGS, ...data };
+  } catch (error) {
+    console.error('Error al consultar ajustes del servidor:', error);
     return DEFAULT_SETTINGS;
   }
 }
 
-export function saveStoredSettings(settings: AppSettings): void {
+export async function saveSettingsToServer(settings: AppSettings): Promise<boolean> {
   try {
-    localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+    const res = await fetch('/api/settings', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify(settings),
+    });
+    return res.ok;
   } catch (error) {
-    console.error('Error al guardar ajustes:', error);
+    console.error('Error al guardar ajustes en el servidor:', error);
+    return false;
   }
-}
-
-export function addReadingToStorage(newReading: Omit<BloodPressureReading, 'id'>): BloodPressureReading {
-  const current = getStoredReadings();
-  const created: BloodPressureReading = {
-    ...newReading,
-    id: `bp-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
-  };
-  const updated = [created, ...current];
-  saveStoredReadings(updated);
-  return created;
-}
-
-export function updateReadingInStorage(updatedReading: BloodPressureReading): BloodPressureReading[] {
-  const current = getStoredReadings();
-  const updated = current.map((r) => (r.id === updatedReading.id ? updatedReading : r));
-  saveStoredReadings(updated);
-  return updated;
-}
-
-export function deleteReadingFromStorage(id: string): BloodPressureReading[] {
-  const current = getStoredReadings();
-  const updated = current.filter((r) => r.id !== id);
-  saveStoredReadings(updated);
-  return updated;
-}
-
-export function deleteSessionFromStorage(readingsInSession: BloodPressureReading[]): BloodPressureReading[] {
-  const idsToDelete = new Set(readingsInSession.map((r) => r.id));
-  const current = getStoredReadings();
-  const updated = current.filter((r) => !idsToDelete.has(r.id));
-  saveStoredReadings(updated);
-  return updated;
-}
-
-export function importReadingsIntoStorage(imported: Omit<BloodPressureReading, 'id'>[]): {
-  updated: BloodPressureReading[];
-  addedCount: number;
-} {
-  const current = getStoredReadings();
-  const existingSignatures = new Set(
-    current.map((r) => `${new Date(r.timestamp).toISOString().slice(0, 16)}_${r.systolic}_${r.diastolic}_${r.heartRate}`)
-  );
-
-  let addedCount = 0;
-  const newItems: BloodPressureReading[] = [];
-
-  imported.forEach((item) => {
-    const sig = `${new Date(item.timestamp).toISOString().slice(0, 16)}_${item.systolic}_${item.diastolic}_${item.heartRate}`;
-    if (!existingSignatures.has(sig)) {
-      existingSignatures.add(sig);
-      addedCount++;
-      newItems.push({
-        ...item,
-        id: `imp-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
-      });
-    }
-  });
-
-  const updated = [...newItems, ...current];
-  saveStoredReadings(updated);
-
-  return { updated, addedCount };
 }

@@ -1,18 +1,25 @@
 import React from 'react';
-import { ShieldCheck, Download, Moon, Sun, Settings } from 'lucide-react';
+import { ShieldCheck, Download, Moon, Sun, Settings, LogOut, Users, User } from 'lucide-react';
 import { useLanguage } from '../i18n/LanguageContext';
 import { AppLogo } from './AppLogo';
+import type { AuthUser } from '../types/bloodPressure';
 
 interface HeaderProps {
+  currentUser: AuthUser | null;
   onOpenExportModal: () => void;
   onOpenSettingsModal: () => void;
+  onOpenUserMgmtModal?: () => void;
+  onLogout?: () => void;
   isDarkMode: boolean;
   onToggleDarkMode: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
+  currentUser,
   onOpenExportModal,
   onOpenSettingsModal,
+  onOpenUserMgmtModal,
+  onLogout,
   isDarkMode,
   onToggleDarkMode,
 }) => {
@@ -29,12 +36,25 @@ export const Header: React.FC<HeaderProps> = ({
           <h1 className="brand-title">{t('header.title')}</h1>
           <div className="brand-badge">
             <ShieldCheck size={13} className="shield-icon" />
-            <span>{t('header.badgePrivate')} &bull; {appVersion}</span>
+            <span>
+              {currentUser ? `Hola, ${currentUser.name}` : t('header.badgePrivate')} &bull; {appVersion}
+            </span>
           </div>
         </div>
       </div>
 
       <div className="header-actions">
+        {currentUser && currentUser.role === 'admin' && onOpenUserMgmtModal && (
+          <button
+            type="button"
+            onClick={onOpenUserMgmtModal}
+            className="btn-icon"
+            title="Gestión de usuarios familiares"
+          >
+            <Users size={22} />
+          </button>
+        )}
+
         <button
           onClick={onToggleDarkMode}
           className="btn-icon"
@@ -55,6 +75,18 @@ export const Header: React.FC<HeaderProps> = ({
           <Download size={18} />
           <span>{t('header.exportBtn')}</span>
         </button>
+
+        {currentUser && onLogout && (
+          <button
+            type="button"
+            onClick={onLogout}
+            className="btn-icon"
+            style={{ color: '#ef4444' }}
+            title="Cerrar Sesión"
+          >
+            <LogOut size={22} />
+          </button>
+        )}
       </div>
     </header>
   );

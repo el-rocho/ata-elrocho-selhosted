@@ -1,17 +1,18 @@
 import { useState, useEffect } from 'react';
-import type { BloodPressureReading, ArmPosition, DateRange, AppSettings, InputMode } from './types/bloodPressure';
+import type { BloodPressureReading, ArmPosition, DateRange, AppSettings, InputMode, AuthUser } from './types/bloodPressure';
 import {
-  getStoredReadings,
-  saveStoredReadings,
-  addReadingToStorage,
-  updateReadingInStorage,
-  deleteSessionFromStorage,
-  deleteReadingFromStorage,
-  getStoredSettings,
-  saveStoredSettings,
-  importReadingsIntoStorage,
-  clearAllStoredData,
+  fetchReadingsFromServer,
+  addReadingToServer,
+  updateReadingOnServer,
+  deleteReadingFromServer,
+  deleteSessionFromServer,
+  clearAllReadingsOnServer,
+  importReadingsToServer,
+  fetchSettingsFromServer,
+  saveSettingsToServer,
+  DEFAULT_SETTINGS,
 } from './services/storageService';
+import { getAuthStatus, logout } from './services/authService';
 import { processReadingsIntoSessions } from './utils/whiteCoatAlgorithm';
 import { checkAndExecuteAutoBackup } from './utils/backupScheduler';
 import { exportToCSV } from './utils/exportCsv';
@@ -24,42 +25,81 @@ import { EditReadingModal } from './components/EditReadingModal';
 import { ExportModal, type ToastNotification } from './components/ExportModal';
 import { SettingsModal } from './components/SettingsModal';
 import { LegalNoticeModal } from './components/LegalNoticeModal';
+import { LoginModal } from './components/LoginModal';
+import { TotpSetupModal } from './components/TotpSetupModal';
+import { UserManagementModal } from './components/UserManagementModal';
 import { LanguageProvider } from './i18n/LanguageContext';
 import { getTranslation } from './i18n/translations';
 
 export function App() {
-  const [readings, setReadings] = useState<BloodPressureReading[]>(() => getStoredReadings());
-  const [settings, setSettings] = useState<AppSettings>(() => getStoredSettings());
+  const [currentUser, setCurrentUser] = useState<AuthUser | null>(null);
+  const [hasAdmin, setHasAdmin] = useState<boolean>(true);
+  const [authChecking, setAuthChecking] = useState<boolean>(true);
+
+  const [readings, setReadings] = useState<BloodPressureReading[]>([]);
+  const [settings, setSettings] = useState<AppSettings>(DEFAULT_SETTINGS);
   const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
   const [isExportModalOpen, setIsExportModalOpen] = useState<boolean>(false);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState<boolean>(false);
   const [isLegalNoticeOpen, setIsLegalNoticeOpen] = useState<boolean>(false);
+  const [isTotpModalOpen, setIsTotpModalOpen] = useState<boolean>(false);
+  const [isUserMgmtModalOpen, setIsUserMgmtModalOpen] = useState<boolean>(false);
+
   const [dateRange, setDateRange] = useState<DateRange>({ preset: '30days' });
   const [readingToEdit, setReadingToEdit] = useState<BloodPressureReading | null>(null);
   const [notificationMsg, setNotificationMsg] = useState<string | ToastNotification | null>(null);
 
   const { sessions } = processReadingsIntoSessions(readings, settings);
 
+  // 1. Verificar sesión del servidor al arrancar
   useEffect(() => {
-    saveStoredReadings(readings);
-  }, [readings]);
+    async function checkAuth() {
+      setAuthChecking(true);
+      const status = await getAuthStatus();
+      setHasAdmin(status.hasAdmin);
+      if (status.user) {
+        setCurrentUser(status.user);
+        await loadUserData();
+      }
+      setAuthChecking(false);
+    }
+    checkAuth();
+  }, []);
+
+  async function loadUserData() {
+    const [fetchedReadings, fetchedSettings] = await Promise.all([
+      fetchReadingsFromServer(),
+      fetchSettingsFromServer(),
+    ]);
+    setReadings(fetchedReadings);
+    setSettings(fetchedSettings);
+  }
+
+  const handleLoginSuccess = async (user: AuthUser) => {
+    setCurrentUser(user);
+    setHasAdmin(true);
+    await loadUserData();
+  };
+
+  const handleLogout = async () => {
+    await logout();
+    setCurrentUser(null);
+    setReadings([]);
+  };
 
   useEffect(() => {
-    saveStoredSettings(settings);
-  }, [settings]);
-
-  useEffect(() => {
-    if (sessions.length > 0) {
+    if (currentUser && sessions.length > 0) {
       const result = checkAndExecuteAutoBackup(sessions, settings, handleUpdateSettings);
       if (result.backupExecuted) {
         setNotificationMsg(getTranslation(settings.language, 'toast.autoBackup', { date: result.dateStr ?? '' }));
         setTimeout(() => setNotificationMsg(null), 6000);
       }
     }
-  }, [readings.length, settings.backupFrequency]);
+  }, [readings.length, settings.backupFrequency, currentUser]);
 
-  const handleUpdateSettings = (newSettings: AppSettings) => {
+  const handleUpdateSettings = async (newSettings: AppSettings) => {
     setSettings(newSettings);
+    await saveSettingsToServer(newSettings);
   };
 
   const handleUpdateInputMode = (mode: InputMode) => {
@@ -67,9 +107,9 @@ export function App() {
     handleUpdateSettings(updated);
   };
 
-  const handleImportReadings = (imported: Omit<BloodPressureReading, 'id'>[]) => {
-    const result = importReadingsIntoStorage(imported);
-    setReadings(result.updated);
+  const handleImportReadings = async (imported: Omit<BloodPressureReading, 'id'>[]) => {
+    const result = await importReadingsToServer(imported);
+    setReadings(result.readings);
     setNotificationMsg(getTranslation(settings.language, 'toast.importedCount', { count: result.addedCount }));
     setTimeout(() => setNotificationMsg(null), 5000);
   };
@@ -85,6 +125,7 @@ export function App() {
       patientSex: settings.patientSex,
       patientAge: settings.patientAge,
     }, settings.language);
+
     const updatedSettings = {
       ...settings,
       lastBackupTimestamp: now.toISOString(),
@@ -94,20 +135,19 @@ export function App() {
     setTimeout(() => setNotificationMsg(null), 5000);
   };
 
-  const handleResetDemoData = () => {
+  const handleResetDemoData = async () => {
     if (window.confirm(getTranslation(settings.language, 'toast.resetDemoConfirm'))) {
-      localStorage.removeItem('graphene_bp_readings_v1');
-      const freshReadings = getStoredReadings();
-      setReadings(freshReadings);
+      await clearAllReadingsOnServer();
+      setReadings([]);
       setIsSettingsModalOpen(false);
       setNotificationMsg(getTranslation(settings.language, 'toast.resetDemoSuccess'));
       setTimeout(() => setNotificationMsg(null), 4000);
     }
   };
 
-  const handleClearAllData = () => {
+  const handleClearAllData = async () => {
     if (window.confirm(getTranslation(settings.language, 'toast.clearAllConfirm'))) {
-      clearAllStoredData();
+      await clearAllReadingsOnServer();
       setReadings([]);
       setIsSettingsModalOpen(false);
       setNotificationMsg(getTranslation(settings.language, 'toast.clearAllSuccess'));
@@ -125,14 +165,14 @@ export function App() {
     }
   };
 
-  const handleAddReading = (data: {
+  const handleAddReading = async (data: {
     systolic: number;
     diastolic: number;
     heartRate: number;
     arm: ArmPosition;
     notes?: string;
   }) => {
-    const created = addReadingToStorage({
+    const created = await addReadingToServer({
       timestamp: new Date().toISOString(),
       systolic: data.systolic,
       diastolic: data.diastolic,
@@ -140,29 +180,46 @@ export function App() {
       arm: data.arm,
       notes: data.notes,
     });
-    setReadings((prev) => [created, ...prev]);
+    if (created) {
+      setReadings((prev) => [created, ...prev]);
+    }
   };
 
-  const handleDeleteSession = (sessionToDelete: any) => {
+  const handleDeleteSession = async (sessionToDelete: any) => {
     if (window.confirm(getTranslation(settings.language, 'list.deleteSessionConfirm'))) {
-      const updated = deleteSessionFromStorage(sessionToDelete.readings);
-      setReadings(updated);
+      const ids = sessionToDelete.readings.map((r: any) => r.id);
+      const ok = await deleteSessionFromServer(ids);
+      if (ok) {
+        setReadings((prev) => prev.filter((r) => !ids.includes(r.id)));
+      }
     }
   };
 
-  const handleDeleteSingleReading = (readingId: string) => {
+  const handleDeleteSingleReading = async (readingId: string) => {
     if (window.confirm(getTranslation(settings.language, 'list.deleteReadingConfirm'))) {
-      const updated = deleteReadingFromStorage(readingId);
-      setReadings(updated);
+      const ok = await deleteReadingFromServer(readingId);
+      if (ok) {
+        setReadings((prev) => prev.filter((r) => r.id !== readingId));
+      }
     }
   };
 
-  const handleSaveReadingEdit = (updatedReading: BloodPressureReading) => {
-    const updated = updateReadingInStorage(updatedReading);
-    setReadings(updated);
+  const handleSaveReadingEdit = async (updatedReading: BloodPressureReading) => {
+    const ok = await updateReadingOnServer(updatedReading);
+    if (ok) {
+      setReadings((prev) => prev.map((r) => (r.id === updatedReading.id ? updatedReading : r)));
+    }
   };
 
   const lastReading = readings.length > 0 ? readings[0] : null;
+
+  if (authChecking) {
+    return (
+      <div style={{ display: 'flex', minHeight: '100vh', justifyContent: 'center', alignItems: 'center', background: 'var(--bg-app)', color: 'var(--text-primary)' }}>
+        <p>Cargando servidor familiar...</p>
+      </div>
+    );
+  }
 
   return (
     <LanguageProvider
@@ -170,6 +227,13 @@ export function App() {
       onLanguageChange={(lang) => handleUpdateSettings({ ...settings, language: lang })}
     >
       <div className="app-container">
+        {!currentUser && (
+          <LoginModal
+            hasAdmin={hasAdmin}
+            onLoginSuccess={handleLoginSuccess}
+          />
+        )}
+
         {notificationMsg && (
           <div className="toast-modal-overlay" onClick={() => setNotificationMsg(null)}>
             <div className="toast-notification" onClick={(e) => e.stopPropagation()}>
@@ -206,8 +270,11 @@ export function App() {
         )}
 
         <Header
+          currentUser={currentUser}
           onOpenExportModal={() => setIsExportModalOpen(true)}
           onOpenSettingsModal={() => setIsSettingsModalOpen(true)}
+          onOpenUserMgmtModal={() => setIsUserMgmtModalOpen(true)}
+          onLogout={handleLogout}
           isDarkMode={isDarkMode}
           onToggleDarkMode={handleToggleDarkMode}
         />
@@ -270,7 +337,30 @@ export function App() {
           onResetDemoData={handleResetDemoData}
           onClearAllData={handleClearAllData}
           onTriggerManualBackup={handleTriggerManualBackup}
+          onOpenTotpModal={() => {
+            setIsSettingsModalOpen(false);
+            setIsTotpModalOpen(true);
+          }}
         />
+
+        <TotpSetupModal
+          isOpen={isTotpModalOpen}
+          onClose={() => setIsTotpModalOpen(false)}
+          isTotpEnabled={Boolean(currentUser?.totp_enabled)}
+          onTotpStatusChanged={(enabled) => {
+            if (currentUser) {
+              setCurrentUser({ ...currentUser, totp_enabled: enabled });
+            }
+          }}
+        />
+
+        {currentUser && currentUser.role === 'admin' && (
+          <UserManagementModal
+            isOpen={isUserMgmtModalOpen}
+            onClose={() => setIsUserMgmtModalOpen(false)}
+            currentUser={currentUser}
+          />
+        )}
 
         <LegalNoticeModal
           isOpen={isLegalNoticeOpen}

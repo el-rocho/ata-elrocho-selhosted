@@ -78,3 +78,21 @@ export interface DateRange {
   startDate?: string;
   endDate?: string;
 }
+
+export type UserRole = 'admin' | 'user';
+
+export interface AuthUser {
+  id: string;
+  username: string;
+  name: string;
+  role: UserRole;
+  totp_enabled: boolean;
+  created_at: string;
+}
+
+export interface AuthStatusResponse {
+  hasAdmin: boolean;
+  userCount: number;
+  user: AuthUser | null;
+}
+

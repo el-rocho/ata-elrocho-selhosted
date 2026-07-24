@@ -12,6 +12,7 @@ interface SettingsModalProps {
   onResetDemoData: () => void;
   onClearAllData: () => void;
   onTriggerManualBackup: () => void;
+  onOpenTotpModal?: () => void;
 }
 
 export const SettingsModal: React.FC<SettingsModalProps> = ({
@@ -22,6 +23,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   onResetDemoData,
   onClearAllData,
   onTriggerManualBackup,
+  onOpenTotpModal,
 }) => {
   const { t } = useLanguage();
 
@@ -336,7 +338,29 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             </div>
           </div>
 
-          {/* Opción 5: Botones de Gestión */}
+          {/* Opción 5: Seguridad y 2FA TOTP */}
+          {onOpenTotpModal && (
+            <div className="settings-section border-top">
+              <div className="field-label">
+                <ShieldAlert size={22} className="text-blue settings-field-icon" />
+                <span>Seguridad de la Cuenta</span>
+              </div>
+              <p className="settings-desc" style={{ marginBottom: '10px' }}>
+                Protege tu acceso con verificación en dos pasos (Google Authenticator, Aegis, Authy, etc.).
+              </p>
+              <button
+                type="button"
+                className="btn-primary-large"
+                onClick={onOpenTotpModal}
+                style={{ width: '100%', justifyContent: 'center', padding: '10px', fontSize: '13px' }}
+              >
+                <ShieldAlert size={18} />
+                <span>Configurar 2FA (TOTP)</span>
+              </button>
+            </div>
+          )}
+
+          {/* Opción 6: Botones de Gestión */}
           <div className="settings-section border-top">
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
               <button
