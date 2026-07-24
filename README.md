@@ -16,6 +16,15 @@ Versión **autoalojada en servidor / NAS (Synology, Unraid, Docker Compose)** di
 
 ---
 
+## 💡 ¿Qué versión elegir? (Autoalojada vs. Individual)
+
+Este repositorio corresponde a la **Versión Autoalojada Multi-usuario (Docker & SQLite)**.
+
+- 🐳 **Versión Autoalojada (Este Repositorio)**: Diseñada para instalar en tu propio servidor doméstico o NAS (Synology, Unraid, Docker Compose) y permitir a **varios miembros de la familia (hasta 10 usuarios)** controlar su tensión arterial de forma centralizada con base de datos SQLite y **autenticación 2FA TOTP**.
+- 📱 **[Versión Individual / Móvil Android (APK / PWA)](https://github.com/el-rocho/cta-elrocho)**: Si prefieres una aplicación móvil **100% offline, nativa Android (APK)** y sin necesidad de instalar un servidor ni crear cuentas de usuario, te recomendamos utilizar la versión individual para un único dispositivo.
+
+---
+
 ## 🚀 Características Principales de la Versión Autoalojada
 
 - **Multiusuario Familiar Centralizado (~10 Usuarios)**: Cuentas individuales para cada miembro de la familia con aislamiento estricto de mediciones, historial y preferencias.
