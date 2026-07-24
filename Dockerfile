@@ -3,6 +3,8 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
+RUN apk add --no-cache python3 make g++
+
 COPY package*.json ./
 RUN npm ci
 
@@ -13,6 +15,8 @@ RUN npm run build
 FROM node:20-alpine AS runner
 
 WORKDIR /app
+
+RUN apk add --no-cache python3 make g++
 
 ENV NODE_ENV=production \
     PORT=3000 \
@@ -34,6 +38,6 @@ VOLUME ["/app/data"]
 EXPOSE 3000
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider http://localhost:3000/api/settings || exit 1
+  CMD wget --no-verbose --tries=1 --spider http://localhost:3000/api/auth/status || exit 1
 
 CMD ["node", "server/index.js"]
