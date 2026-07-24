@@ -2,42 +2,66 @@
   <img src="public/logo-day.png" alt="Logo Control Tensión Arterial - Modo Día" width="160" height="160" />
 </p>
 
-# Control Tensión Arterial & Pulsaciones 🩺
+# Control Tensión Arterial & Pulsaciones (Autoalojada Multi-usuario) 🩺🐳
 
+![Docker Ready](https://img.shields.io/badge/Docker-Autoalojado%20NAS-2496ED?style=for-the-badge&logo=docker)
+![SQLite Database](https://img.shields.io/badge/Base%20de%20Datos-SQLite-003B57?style=for-the-badge&logo=sqlite)
+![Seguridad 2FA](https://img.shields.io/badge/Seguridad-2FA%20TOTP-10b981?style=for-the-badge&logo=authenticator)
 ![Built with Vibe Coding](https://img.shields.io/badge/Built%20with-Vibe%20Coding%20%26%20AI-7c3aed?style=for-the-badge&logo=sparkles)
-![Android APK](https://img.shields.io/badge/Android-APK%20Nativa%20v1.5.2-3DDC84?style=for-the-badge&logo=android)
-![Obtainium Compatible](https://img.shields.io/badge/Obtainium-Releases%20v1.5.2-2563eb?style=for-the-badge&logo=github)
 ![Licencia](https://img.shields.io/badge/Licencia-MIT-blue?style=for-the-badge)
 
-Aplicación Nativa **Android (APK)** y web offline para el registro, seguimiento y análisis de la tensión arterial (sistólica y diastólica) y ritmo cardíaco (pulsaciones). Diseñada para ofrecer máxima privacidad en el dispositivo (compatible con **GrapheneOS** y Android estándar), **sin barra de navegador** y con funcionalidad 100% local sin envío de datos a servidores externos.
+Versión **autoalojada en servidor / NAS (Synology, Unraid, Docker Compose)** diseñada para el seguimiento y gestión privada de la tensión arterial y pulsaciones en el **entorno familiar (hasta 10 usuarios)**.
 
 > ✨ **Metodología de Desarrollo**: Este proyecto ha sido conceptualizado, diseñado y guiado mediante **Vibe Coding**, utilizando asistencia avanzada de Inteligencia Artificial para la generación de código y arquitectura.
 
 ---
 
-## 📱 Instalación y Actualizaciones (Obtainium & Releases)
+## 🚀 Características Principales de la Versión Autoalojada
 
-Las publicaciones oficiales y compilaciones del APK se generan automáticamente mediante **GitHub Actions** al publicar un Tag o Release en el repositorio.
-
-### 📲 Actualización Automática con Obtainium:
-La aplicación es totalmente compatible con **[Obtainium](https://github.com/ImranRaja1/Obtainium)**. Al añadir la URL del repositorio de GitHub (`https://github.com/el-rocho/cta-elrocho`), Obtainium detectará automáticamente las nuevas versiones (`v1.3.2`, etc.) y actualizará la App directamente en tu dispositivo Android.
-
-### 📥 Descarga Manual de Releases:
-1. Accede a la sección **[Releases del Repositorio](https://github.com/el-rocho/cta-elrocho/releases)**.
-2. Descarga la última versión del archivo `control-tension-arterial.apk`.
-3. Instala el paquete `.apk` en tu dispositivo Android.
+- **Multiusuario Familiar Centralizado (~10 Usuarios)**: Cuentas individuales para cada miembro de la familia con aislamiento estricto de mediciones, historial y preferencias.
+- **Base de Datos SQLite Persistente**: Almacenamiento ágil y ligero en un único archivo (`/data/cta_database.sqlite`). Copias de seguridad ultrasimples respaldando la carpeta `/data`.
+- **Autenticación Segura & Doble Factor (2FA / TOTP)**:
+  - Cifrado de contraseñas con **bcrypt**.
+  - Sesiones cifradas en cookies seguras `HttpOnly`.
+  - **Soporte 2FA TOTP (RFC 6238)** con Código QR compatible con Google Authenticator, Aegis, Authy, Bitwarden, 1Password, etc.
+  - **8 Códigos de rescate de emergencia** de un solo uso.
+- **Panel de Administración Familiar**: La primera persona registrada se convierte en Administrador, pudiendo dar de alta a familiares, restablecer claves o administrar permisos.
+- **Misma Experiencia de Diseño Cuidada**:
+  - **Filtro de Síndrome de Bata Blanca**: Algoritmo médico inteligente que descarta tomas iniciales elevadas producidas por la ansiedad del momento.
+  - **Informes PDF Médicos Bilingües**: Gráfico temporal con doble eje Y (tensión arterial + línea de pulsaciones) y tabla de registros.
+  - **Exportación e Importación CSV**: Copias de seguridad automáticas con metadatos.
+  - **Interfaz Bilingüe (Español / Inglés)**: Adaptable a móviles, tabletas y ordenadores.
 
 ---
 
-## 🚀 Características Principales
+## 🐳 Despliegue con Docker Compose (Recomendado)
 
-- **Soporte Bilingüe Completo (Español / Inglés)**: Selección de idioma desde la pantalla de **Configuración** (🇪🇸 Español / 🇬🇧 English). Interfaz, ruletas, gráficos, notificaciones e informes exportados se adaptan al instante.
-- **Experiencia Nativa Android**: Funciona como una App independiente a pantalla completa sin la barra de direcciones del navegador.
-- **100% Offline y Privada (RGPD / GrapheneOS)**: Todos los datos residen exclusivamente en el almacenamiento interno de tu teléfono (`localStorage` / `IndexedDB`).
-- **Sistema Dual de Entrada**: Elige entre teclado numérico tradicional o **Ruleta Táctil de Selección Rápida** centrada en la última medición realizada.
-- **Filtro de Síndrome de Bata Blanca**: Algoritmo inteligente que descarta tomas iniciales elevadas producidas por la ansiedad del momento (intervalos de 3, 5 o 10 minutos entre tomas consecutivas).
-- **Informes PDF Médicos Bilingües**: Gráfico temporal con doble eje Y (tensión arterial + línea de pulsaciones en el eje derecho) y tabla detallada de registros.
-- **Exportación e Importación CSV**: Copias de seguridad automáticas con cabeceras y metadatos en el idioma seleccionado.
+Crea un archivo `docker-compose.yml` en tu servidor o NAS:
+
+```yaml
+version: '3.8'
+
+services:
+  cta-elrocho-server:
+    image: ghcr.io/el-rocho/cta-elrocho-selhosted:latest
+    container_name: cta-tension-arterial
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - NODE_ENV=production
+      - DATA_DIR=/app/data
+    volumes:
+      - ./data:/app/data
+```
+
+Inicia el contenedor:
+```bash
+docker-compose up -d
+```
+
+Accede desde tu navegador o móvil en tu red local: `http://<IP_DE_TU_SERVIDOR>:3000`.
 
 ---
 
@@ -48,15 +72,8 @@ El **Filtro de Síndrome de Bata Blanca** mitiga la distorsión generada por el 
 ### 🔬 Cómo funciona el algoritmo:
 1. **Agrupación Consecutiva**: Se agrupan dentro de una misma sesión las tomas donde el intervalo entre una toma y la anterior sea menor al margen configurado (**3, 5 o 10 minutos**).
 2. **Sesiones de 2 tomas**: Si la 1ª toma es significativamente superior a la 2ª ($\ge 8$ mmHg sistólica / $\ge 4$ mmHg diastólica), se descarta la 1ª toma reteniendo la 2ª. En caso contrario, se promedian ambas.
-3. **Sesiones de 3 tomas**: Se descarta siempre la 1ª toma (por su bajo valor diagnóstico de aclimatación al manguito) y se calcula la media con las 2 tomas restantes.
+3. **Sesiones de 3 tomas**: Se descarta siempre la 1ª toma y se calcula la media con las 2 tomas restantes.
 4. **Sesiones de 4 o más tomas**: Se descarta la 1ª toma y se continúan descartando las siguientes tomas iniciales elevadas ($\ge 8$ mmHg sistólica / $\ge 4$ mmHg diastólica) respecto a la media de las restantes, siempre y cuando queden al menos 3 tomas válidas para calcular la media definitiva.
-
----
-
-## 🌐 Estructura de Ramas
-
-- **`main`**: Versión estable de producción.
-- **`dev`**: Rama de desarrollo activo para pruebas de características.
 
 ---
 
@@ -66,13 +83,10 @@ El **Filtro de Síndrome de Bata Blanca** mitiga la distorsión generada por el 
 # Instalar dependencias
 npm install
 
-# Iniciar servidor de desarrollo web
+# Iniciar en modo desarrollo
 npm run dev
 
-# Compilar proyecto web y sincronizar con Android nativo (Capacitor)
+# Compilar producción y ejecutar servidor
 npm run build
-npm run cap:sync
-
-# Abrir el proyecto en Android Studio
-npm run cap:open
+npm run server
 ```
