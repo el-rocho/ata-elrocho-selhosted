@@ -55,8 +55,8 @@ El servidor utiliza una **base de datos plana centralizada basada en JSON (`data
 
 1. Clona el repositorio:
    ```bash
-   git clone https://github.com/el-rocho/ata-elrocho-selhosted.git
-   cd ata-elrocho-selhosted
+   git clone https://github.com/el-rocho/cta-elrocho-selhosted.git
+   cd cta-elrocho-selhosted
    ```
 2. Levanta el contenedor:
    ```bash
